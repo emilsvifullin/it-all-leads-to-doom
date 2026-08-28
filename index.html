@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<!-- saved from url=(0068)file:///Users/emilsvifullin/Downloads/marvel-doomsday-watchlist.html -->
-<html lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="ru">
+<head>
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Marvel по порядку — подготовка к «Судному дню»</title>
-<link rel="preconnect" href="https://fonts.googleapis.com/">
-<link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
-<link href="./All ways leads to Doom_files/css2" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#e6dcc3; --card:#efe7d3; --ink:#231b12; --ink-soft:#6a5c4a;
@@ -59,8 +59,8 @@
   .year i{flex:1;height:1px;background:var(--rule)}
   .year em{font-family:var(--mono);font-style:normal;font-size:11px;color:var(--ink-soft)}
 
-  .row{position:relative;background:var(--card);border:1px solid var(--rule);
-    border-left-width:4px;margin-bottom:7px}
+  .row{position:relative;display:flex;flex-direction:column;background:var(--card);
+    border:1px solid var(--rule);border-left-width:4px;margin-bottom:7px}
   .row.p-must{border-left-color:var(--rust)}
   .row.p-nice{border-left-color:var(--ochre)}
   .row.p-opt{border-left-color:#a99e86}
@@ -83,14 +83,24 @@
   .t-must{color:var(--rust)} .t-nice{color:var(--ochre)} .t-opt{color:#8a7f68}
   .t-fr{color:#5d6b52}
 
-  .meta{display:none;gap:10px 18px;align-items:center;flex-wrap:wrap;
-    padding:9px 13px 11px 44px;border-top:1px dashed var(--rule);background:#e9e0c9}
+  .meta{display:none;flex-direction:column;gap:9px;align-items:flex-start;
+    padding:10px 13px 12px 44px;border-top:1px dashed var(--rule);background:#e9e0c9}
   .row.done .meta{display:flex}
-  .meta label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--ink-soft);display:flex;align-items:center;gap:7px}
-  .meta select,.meta input[type=date]{font-family:var(--mono);font-size:12.5px;color:var(--ink);
-    background:#fbf7ec;border:1px solid var(--rule);padding:4px 6px;letter-spacing:0;text-transform:none}
-  .meta select.set{border-color:var(--rust);color:var(--rust);font-weight:600}
+  .mg{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--ink-soft);flex:0 0 auto}
+  .rate{display:flex;gap:3px;flex-wrap:wrap}
+  .rate b{font-family:var(--mono);font-weight:500;font-size:12px;width:27px;height:27px;
+    display:grid;place-items:center;border:1px solid var(--rule);background:#fbf7ec;
+    color:var(--ink-soft);cursor:pointer;user-select:none;transition:background .1s,color .1s}
+  .rate b:hover{border-color:var(--ink);color:var(--ink)}
+  .rate b.on{background:var(--rust);border-color:var(--rust);color:#fbf7ec;font-weight:600}
+  .rate b.clr{font-size:14px;color:#a99e86}
+  .when{font-family:var(--mono);font-size:12.5px;color:var(--ink);background:#fbf7ec;
+    border:1px solid var(--rule);padding:5px 8px;height:27px;
+    -webkit-appearance:none;appearance:none;border-radius:0}
+  .when::-webkit-calendar-picker-indicator{opacity:.5;cursor:pointer}
+  .when::-webkit-date-and-time-value{text-align:left}
 
   .row.done{background:#e4dbc4;border-color:#cabd9e}
   .row.done .title,.row.done .why{opacity:.45}
@@ -112,8 +122,14 @@
     padding-top:14px;border-top:1px solid var(--rule);line-height:1.7}
 
   @media (max-width:620px){
-    .stamp{display:none}
     .meta{padding-left:13px}
+    .rate b{width:25px;height:25px;font-size:11.5px}
+    button.ghost{margin-left:0;flex:1 0 100%}
+    .stamp{position:static;align-self:flex-end;margin:0 13px 11px;font-size:11px;
+      transform:rotate(-4deg)}
+    .row.done .stamp{animation:slamM .22s ease-out}
+    @keyframes slamM{from{transform:rotate(-4deg) scale(1.5);opacity:0}
+                     to{transform:rotate(-4deg) scale(1);opacity:.7}}
   }
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -128,13 +144,13 @@
     <p class="subtitle">Чтобы ни один персонаж не появился из ниоткуда</p>
     <div class="facts">
       <span>Премьера<br><b>18 декабря 2026</b></span>
-      <span>Осталось<br><span class="big" id="days">115</span> <b>дн.</b></span>
-      <span>Просмотрено<br><b><span id="doneN">0</span> из <span id="totalN">117</span></b></span>
-      <span>Обязательного<br><b><span id="mustDone">0</span> из <span id="mustN">54</span></b></span>
+      <span>Осталось<br><span class="big" id="days">—</span> <b>дн.</b></span>
+      <span>Просмотрено<br><b><span id="doneN">0</span> из <span id="totalN">0</span></b></span>
+      <span>Обязательного<br><b><span id="mustDone">0</span> из <span id="mustN">0</span></b></span>
       <span>Средняя оценка<br><b><span id="avg">—</span></b></span>
     </div>
     <div class="meter">
-      <div class="meter-bar" id="bar">[························] 0%</div>
+      <div class="meter-bar" id="bar"></div>
       <div class="meter-note">Отметки, оценки и даты сохраняются автоматически в этом браузере.</div>
     </div>
   </div>
@@ -149,2113 +165,7 @@
   <button class="ghost" id="reset">Сбросить всё</button>
 </nav>
 
-<main id="list"><div class="year"><span>1998</span><i></i><em>0 / 1</em></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Блэйд">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Блэйд<span class="date">август 1998</span></span>
-          <span class="why">Уэсли Снайпс возвращается к роли в «Дэдпуле и Росомахе». Продолжения для этого не нужны.</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">Marvel / прочее</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2000</span><i></i><em>0 / 1</em></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Люди Икс">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Люди Икс<span class="date">июль 2000</span></span>
-          <span class="why">Профессор Икс, Магнето, Циклоп, Мистик — все заявлены в «Судном дне» теми же актёрами.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">Люди Икс</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2002</span><i></i><em>0 / 2</em></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Блэйд 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Блэйд 2<span class="date">март 2002</span></span>
-          <span class="why">Только если понравится первый.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Marvel / прочее</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Человек-паук">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Человек-паук<span class="date">май 2002</span></span>
-          <span class="why">Тоби Магуайр и Зелёный гоблин Дефо — оба возвращаются в «Нет пути домой».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">Паук / Sony</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2003</span><i></i><em>0 / 2</em></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Сорвиголова">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Сорвиголова<span class="date">февраль 2003</span></span>
-          <span class="why">С Беном Аффлеком, к MCU отношения не имеет. Нужен разве что как контекст к «Электре».</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Marvel / прочее</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Люди Икс 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Люди Икс 2<span class="date">май 2003</span></span>
-          <span class="why">Дебют Ночного Змея (Алан Камминг). Лучшая часть старой трилогии.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">Люди Икс</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2004</span><i></i><em>0 / 2</em></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Человек-паук 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Человек-паук 2<span class="date">июнь 2004</span></span>
-          <span class="why">Доктор Осьминог Молины. Его финал напрямую обыгрывается в «Нет пути домой».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">Паук / Sony</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Блэйд: Троица">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Блэйд: Троица<span class="date">декабрь 2004</span></span>
-          <span class="why">Можно пропустить.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Marvel / прочее</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2005</span><i></i><em>0 / 2</em></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Электра">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Электра<span class="date">январь 2005</span></span>
-          <span class="why">Дженнифер Гарнер вернулась к роли в «Дэдпуле и Росомахе».</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Marvel / прочее</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Фантастическая четвёрка">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Фантастическая четвёрка<span class="date">июль 2005</span></span>
-          <span class="why">Крис Эванс в роли Человека-факела — на этом построено его камео в «Дэдпуле и Росомахе». К «Первым шагам» отношения не имеет.</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">Marvel / прочее</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2006</span><i></i><em>0 / 1</em></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Люди Икс: Последняя битва">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Люди Икс: Последняя битва<span class="date">май 2006</span></span>
-          <span class="why">Зверь Келси Грэммера — он же после титров «Марвелов» и в «Судном дне».</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">Люди Икс</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2007</span><i></i><em>0 / 2</em></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Человек-паук 3">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Человек-паук 3<span class="date">май 2007</span></span>
-          <span class="why">Песочный человек, который вернулся в «Нет пути домой».</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">Паук / Sony</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Фантастическая четвёрка: Вторжение Серебряного сёрфера">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Фантастическая четвёрка: Вторжение Серебряного сёрфера<span class="date">июнь 2007</span></span>
-          <span class="why">Только для полноты картины.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Marvel / прочее</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2008</span><i></i><em>0 / 2</em></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Железный человек">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Железный человек<span class="date">май 2008</span></span>
-          <span class="why">Начало MCU. Дауни-мл. теперь играет Дума, так что отсюда начинается вся линия.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Невероятный Халк">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Невероятный Халк<span class="date">июнь 2008</span></span>
-          <span class="why">Происхождение Беннера, Тандерболт Росс и Сэмюэл Стернс. Росс и Стернс вернулись в «Дивном новом мире», Халк — в «Новом дне». Беннера потом переиграл Марк Руффало.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2009</span><i></i><em>0 / 1</em></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Люди Икс: Начало. Росомаха">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Люди Икс: Начало. Росомаха<span class="date">май 2009</span></span>
-          <span class="why">Та самая версия Дэдпула, над которой шутят в «Дэдпуле и Росомахе».</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">Люди Икс</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2010</span><i></i><em>0 / 1</em></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Железный человек 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Железный человек 2<span class="date">май 2010</span></span>
-          <span class="why">Дебют Наташи Романофф и Роуди — оба сразу во «Мстителях».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2011</span><i></i><em>0 / 5</em></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Тор">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Тор<span class="date">май 2011</span></span>
-          <span class="why">Тор и Локи, оба заявлены в «Судном дне». Плюс Тессеракт.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Люди Икс: Первый класс">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Люди Икс: Первый класс<span class="date">июнь 2011</span></span>
-          <span class="why">Молодые Ксавье и Магнето. Объясняет их вражду, которую вы видели в 2000-м.</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">Люди Икс</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Первый мститель">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Первый мститель<span class="date">июль 2011</span></span>
-          <span class="why">Стив Роджерс, Баки Барнс, Красный Череп.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Marvel One-Shot: Консультант">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Marvel One-Shot: Консультант<span class="date">сентябрь 2011</span></span>
-          <span class="why">5 минут. Объясняет, зачем Щ.И.Т. отправлял Ситуэлла к Аброминацию после «Невероятного Халка».</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Marvel One-Shot: Кое-что случилось по дороге к молоту Тора">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Marvel One-Shot: Кое-что случилось по дороге к молоту Тора<span class="date">октябрь 2011</span></span>
-          <span class="why">4 минуты про агента Колсона. Чистый бонус.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2012</span><i></i><em>0 / 3</em></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Мстители">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Мстители<span class="date">май 2012</span></span>
-          <span class="why">Сбор команды. Точка отсчёта.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Новый Человек-паук">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Новый Человек-паук<span class="date">июль 2012</span></span>
-          <span class="why">Эндрю Гарфилд и Ящер — оба в «Нет пути домой».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">Паук / Sony</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Marvel One-Shot: Item 47">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Marvel One-Shot: Item 47<span class="date">сентябрь 2012</span></span>
-          <span class="why">Что стало с оружием читаури после битвы за Нью-Йорк.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2013</span><i></i><em>0 / 4</em></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Железный человек 3">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Железный человек 3<span class="date">май 2013</span></span>
-          <span class="why">Тревор Слэттери отсюда всплывает в «Шан-Чи».</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Росомаха: Бессмертный">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Росомаха: Бессмертный<span class="date">июль 2013</span></span>
-          <span class="why">Мост между «Последней битвой» и «Днями минувшего будущего».</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">Люди Икс</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Marvel One-Shot: Агент Картер">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Marvel One-Shot: Агент Картер<span class="date">сентябрь 2013</span></span>
-          <span class="why">15 минут про Пегги после войны. Пролог к сериалу.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Тор 2: Царство тьмы">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Тор 2: Царство тьмы<span class="date">ноябрь 2013</span></span>
-          <span class="why">Камень Реальности и Коллекционер.</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2014</span><i></i><em>0 / 5</em></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Marvel One-Shot: Да здравствует король">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Marvel One-Shot: Да здравствует король<span class="date">февраль 2014</span></span>
-          <span class="why">Тревор Слэттери в тюрьме. Настоящий Мандарин упомянут здесь, а объяснят его только в «Шан-Чи».</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Первый мститель: Другая война">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Первый мститель: Другая война<span class="date">апрель 2014</span></span>
-          <span class="why">Баки как Зимний Солдат и развал Щ.И.Т.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Новый Человек-паук: Высокое напряжение">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Новый Человек-паук: Высокое напряжение<span class="date">май 2014</span></span>
-          <span class="why">Электро Джейми Фокса и смерть Гвен — без этого не работает ключевая сцена Гарфилда в «Нет пути домой».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">Паук / Sony</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Люди Икс: Дни минувшего будущего">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Люди Икс: Дни минувшего будущего<span class="date">май 2014</span></span>
-          <span class="why">Соединяет старый и молодой составы и переписывает таймлайн.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">Люди Икс</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Стражи Галактики">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Стражи Галактики<span class="date">август 2014</span></span>
-          <span class="why">Вся космическая команда, которая появится в «Войне бесконечности».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2015</span><i></i><em>0 / 5</em></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Агент Картер, сезон 1">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Агент Картер, сезон 1<span class="date">январь 2015</span></span>
-          <span class="why">Пегги основывает Щ.И.Т. Красиво, но её саму вы уже знаете по «Первому мстителю», а герои сериала дальше не появляются.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">ABC</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Сорвиголова, сезон 1">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Сорвиголова, сезон 1<span class="date">апрель 2015</span></span>
-          <span class="why">Мэтт Мёрдок Чарли Кокса и Кингпин. Именно этот Сорвиголова мелькает в «Нет пути домой».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">Netflix</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Мстители: Эра Альтрона">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Мстители: Эра Альтрона<span class="date">май 2015</span></span>
-          <span class="why">Альтрон, Вижен, Ванда и Пьетро. Альтрон возвращается в VisionQuest.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Человек-муравей">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Человек-муравей<span class="date">июль 2015</span></span>
-          <span class="why">Скотт Лэнг и квантовый мир.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Джессика Джонс, сезон 1">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Джессика Джонс, сезон 1<span class="date">ноябрь 2015</span></span>
-          <span class="why">Кристен Риттер вернулась во втором сезоне «Рождённого заново».</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">Netflix</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2016</span><i></i><em>0 / 7</em></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Агент Картер, сезон 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Агент Картер, сезон 2<span class="date">январь 2016</span></span>
-          <span class="why">Финал истории Пегги. На дальнейшие фильмы не влияет.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">ABC</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Дэдпул">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Дэдпул<span class="date">февраль 2016</span></span>
-          <span class="why">Уэйд Уилсон, Колосс, Негасимая Тень.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">Люди Икс</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Сорвиголова, сезон 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Сорвиголова, сезон 2<span class="date">март 2016</span></span>
-          <span class="why">Дебют Карающего ангела (Джон Бернтал) и Электры. Отсюда растёт Каратель, которого вы видите в «Новом дне».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">Netflix</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Первый мститель: Противостояние">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Первый мститель: Противостояние<span class="date">май 2016</span></span>
-          <span class="why">Раскол Мстителей, дебют Т’Чаллы, Питера Паркера и Земо.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Люди Икс: Апокалипсис">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Люди Икс: Апокалипсис<span class="date">май 2016</span></span>
-          <span class="why">Молодые Циклоп, Джина и Ночной Змей.</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">Люди Икс</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Люк Кейдж, сезон 1">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Люк Кейдж, сезон 1<span class="date">сентябрь 2016</span></span>
-          <span class="why">Нужен в основном ради «Защитников».</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Netflix</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Доктор Стрэндж">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Доктор Стрэндж<span class="date">ноябрь 2016</span></span>
-          <span class="why">Правила магии и мультивселенной, Вонг и Мордо.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2017</span><i></i><em>0 / 8</em></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Логан">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Логан<span class="date">март 2017</span></span>
-          <span class="why">Смерть Логана и Лора / Икс-23. На этом целиком построен сюжет «Дэдпула и Росомахи».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">Люди Икс</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Железный кулак, сезон 1">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Железный кулак, сезон 1<span class="date">март 2017</span></span>
-          <span class="why">Самый слабый из четвёрки, но Дэнни нужен в «Защитниках».</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Netflix</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Стражи Галактики 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Стражи Галактики 2<span class="date">май 2017</span></span>
-          <span class="why">Мантис, Небула и Йонду.</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Человек-паук: Возвращение домой">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Человек-паук: Возвращение домой<span class="date">июль 2017</span></span>
-          <span class="why">Питер Паркер Холланда, Нед, Мишель, Стервятник.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Защитники">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Защитники<span class="date">август 2017</span></span>
-          <span class="why">Кроссовер четвёрки. Закрывает линию Электры.</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">Netflix</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Нелюди">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Нелюди<span class="date">сентябрь 2017</span></span>
-          <span class="why">Единственный пункт, который можно смело выкинуть: никто отсюда дальше не появляется.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Netflix / ABC</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Тор: Рагнарёк">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Тор: Рагнарёк<span class="date">ноябрь 2017</span></span>
-          <span class="why">Валькирия, Корг, новый Тор. Ведёт прямо в «Войну бесконечности».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Каратель, сезон 1">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Каратель, сезон 1<span class="date">ноябрь 2017</span></span>
-          <span class="why">Происхождение Фрэнка Касла и Микро. Ровно то, чего не объясняют в «Новом дне».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">Netflix</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2018</span><i></i><em>0 / 9</em></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Чёрная Пантера">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Чёрная Пантера<span class="date">февраль 2018</span></span>
-          <span class="why">Ваканда, Шури, М’Баку, Окойе.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Джессика Джонс, сезон 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Джессика Джонс, сезон 2<span class="date">март 2018</span></span>
-          <span class="why">Личная история, дальше не отзывается.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Netflix</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Мстители: Война бесконечности">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Мстители: Война бесконечности<span class="date">апрель 2018</span></span>
-          <span class="why">Обязательно.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Дэдпул 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Дэдпул 2<span class="date">май 2018</span></span>
-          <span class="why">Кабель, Домино, Джаггернаут и Икс-Форс.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">Люди Икс</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Люк Кейдж, сезон 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Люк Кейдж, сезон 2<span class="date">июнь 2018</span></span>
-          <span class="why">Можно пропустить.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Netflix</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Человек-муравей и Оса">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Человек-муравей и Оса<span class="date">июль 2018</span></span>
-          <span class="why">Джанет ван Дайн и квантовый мир — пригодится в «Квантомании».</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Железный кулак, сезон 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Железный кулак, сезон 2<span class="date">сентябрь 2018</span></span>
-          <span class="why">Можно пропустить.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Netflix</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Веном">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Веном<span class="date">октябрь 2018</span></span>
-          <span class="why">Отдельная линия Sony, пересекается с MCU только в сценах после титров.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Паук / Sony</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Сорвиголова, сезон 3">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Сорвиголова, сезон 3<span class="date">октябрь 2018</span></span>
-          <span class="why">Булсай и возвращение Фиска. Финал перед «Рождённым заново».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">Netflix</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2019</span><i></i><em>0 / 6</em></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Каратель, сезон 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Каратель, сезон 2<span class="date">январь 2019</span></span>
-          <span class="why">Завершает арку Фрэнка до его возвращения в MCU.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">Netflix</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Капитан Марвел">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Капитан Марвел<span class="date">март 2019</span></span>
-          <span class="why">Кэрол, скруллы, Ник Фьюри и Моника Рамбо.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Мстители: Финал">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Мстители: Финал<span class="date">апрель 2019</span></span>
-          <span class="why">Смерть Тони, уход Стива, разлом времени — база для всей мультивселенной.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Люди Икс: Тёмный Феникс">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Люди Икс: Тёмный Феникс<span class="date">июнь 2019</span></span>
-          <span class="why">Формально закрывает линию Fox, но ни на что дальше не влияет.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Люди Икс</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Джессика Джонс, сезон 3">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Джессика Джонс, сезон 3<span class="date">июнь 2019</span></span>
-          <span class="why">Финал сериалов Netflix, для сюжета не нужен.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Netflix</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Человек-паук: Вдали от дома">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Человек-паук: Вдали от дома<span class="date">июль 2019</span></span>
-          <span class="why">Мистерио и финал, который запускает «Нет пути домой».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2021</span><i></i><em>0 / 10</em></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="ВандаВижен">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">ВандаВижен<span class="date">январь 2021</span></span>
-          <span class="why">Ванда, Вижен, Белый Вижен и Агата. Прямая подводка к VisionQuest.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Сокол и Зимний Солдат">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Сокол и Зимний Солдат<span class="date">март 2021</span></span>
-          <span class="why">Сэм становится Кэпом, дебют Джона Уокера и Хоакина Торреса — оба в «Судном дне».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Локи, сезон 1">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Локи, сезон 1<span class="date">июнь 2021</span></span>
-          <span class="why">TVA, ветки времени, Тот, Кто Остаётся. Ключ ко всей мультивселенной.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Чёрная вдова">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Чёрная вдова<span class="date">июль 2021</span></span>
-          <span class="why">Дебют Елены Беловой и Красного Стража.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="What If…?, сезон 1">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">What If…?, сезон 1<span class="date">август 2021</span></span>
-          <span class="why">Капитан Картер отсюда появляется живьём в «Мультивселенной безумия».</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">Анимация</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Шан-Чи и легенда десяти колец">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Шан-Чи и легенда десяти колец<span class="date">сентябрь 2021</span></span>
-          <span class="why">Симу Лю заявлен в «Судном дне». Плюс объясняет Слэттери и кольца.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Веном 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Веном 2<span class="date">октябрь 2021</span></span>
-          <span class="why">Сцена после титров связывает Венома с «Нет пути домой».</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">Паук / Sony</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Вечные">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Вечные<span class="date">ноябрь 2021</span></span>
-          <span class="why">Целестиалы — их логика всплывает в «Дивном новом мире».</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Соколиный глаз">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Соколиный глаз<span class="date">ноябрь 2021</span></span>
-          <span class="why">Кейт Бишоп, Йелена и Кингпин в MCU.</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Человек-паук: Нет пути домой">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Человек-паук: Нет пути домой<span class="date">декабрь 2021</span></span>
-          <span class="why">Здесь сходится всё: оба прошлых Паука, злодеи Sony и камео Мэтта Мёрдока.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2022</span><i></i><em>0 / 10</em></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Лунный рыцарь">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Лунный рыцарь<span class="date">март 2022</span></span>
-          <span class="why">Марк Спектор. Пока отдельная линия.</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Морбиус">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Морбиус<span class="date">апрель 2022</span></span>
-          <span class="why">После титров появляется Эдриан Тумс — тот самый Стервятник из MCU, которого выбросило сюда после «Нет пути домой».</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Паук / Sony</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Доктор Стрэндж: В мультивселенной безумия">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Доктор Стрэндж: В мультивселенной безумия<span class="date">май 2022</span></span>
-          <span class="why">Иллюминаты, Профессор Икс Патрика Стюарта и понятие «вторжения» миров.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Мисс Марвел">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Мисс Марвел<span class="date">июнь 2022</span></span>
-          <span class="why">Камала Хан, нужна для «Марвелов».</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Тор: Любовь и гром">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Тор: Любовь и гром<span class="date">июль 2022</span></span>
-          <span class="why">Горр и Джейн. Дальше почти не отзывается.</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Я — Грут, сезон 1">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Я — Грут, сезон 1<span class="date">август 2022</span></span>
-          <span class="why">Пять коротких мультиков по паре минут.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Анимация</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Женщина-Халк">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Женщина-Халк<span class="date">август 2022</span></span>
-          <span class="why">Дженнифер Уолтерс и возвращение Сорвиголовы в MCU.</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Оборотень ночью">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Оборотень ночью<span class="date">октябрь 2022</span></span>
-          <span class="why">Часовой спецвыпуск. Джек Расселл, Эльза Бладстоун и Мужчина-Тварь — новый угол MCU.</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Чёрная Пантера: Ваканда навеки">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Чёрная Пантера: Ваканда навеки<span class="date">ноябрь 2022</span></span>
-          <span class="why">Шури в роли Пантеры и Нэмор — оба заявлены в «Судном дне».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Праздничный спецвыпуск Стражей Галактики">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Праздничный спецвыпуск Стражей Галактики<span class="date">ноябрь 2022</span></span>
-          <span class="why">Обязателен перед «Стражами 3»: здесь Мантис оказывается сестрой Квилла, а Крэглин получает стрелу Йонду.</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2023</span><i></i><em>0 / 7</em></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Человек-муравей и Оса: Квантомания">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Человек-муравей и Оса: Квантомания<span class="date">февраль 2023</span></span>
-          <span class="why">Кэсси Лэнг и Канг. Ветку Канга свернули, но Кэсси в «Судном дне».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Стражи Галактики 3">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Стражи Галактики 3<span class="date">май 2023</span></span>
-          <span class="why">Закрывает команду и объясняет, почему их нет в «Судном дне».</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Секретное вторжение">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Секретное вторжение<span class="date">июнь 2023</span></span>
-          <span class="why">Меняет статус Фьюри и Роуди.</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Я — Грут, сезон 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Я — Грут, сезон 2<span class="date">сентябрь 2023</span></span>
-          <span class="why">Ещё пять коротких мультиков.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Анимация</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Локи, сезон 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Локи, сезон 2<span class="date">октябрь 2023</span></span>
-          <span class="why">Финал переустраивает древо времени. Локи в «Судном дне» — уже вот этот.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Марвелы">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Марвелы<span class="date">ноябрь 2023</span></span>
-          <span class="why">Сцена после титров: Зверь Келси Грэммера и первое столкновение вселенных.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="What If…?, сезон 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">What If…?, сезон 2<span class="date">декабрь 2023</span></span>
-          <span class="why">Для настроения.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Анимация</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2024</span><i></i><em>0 / 6</em></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Эхо">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Эхо<span class="date">январь 2024</span></span>
-          <span class="why">Майя Лопес и Кингпин перед «Рождённым заново».</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Люди Икс ’97, сезон 1">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Люди Икс ’97, сезон 1<span class="date">март 2024</span></span>
-          <span class="why">Отдельная вселенная, но лучший портрет команды.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Анимация</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Дэдпул и Росомаха">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Дэдпул и Росомаха<span class="date">июль 2024</span></span>
-          <span class="why">Дебют Гамбита, камео Блэйда, Электры и Человека-факела. Главный мост между Fox и MCU.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">Люди Икс</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Агата: Кто же ещё">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Агата: Кто же ещё<span class="date">сентябрь 2024</span></span>
-          <span class="why">Билли Максимофф и прямая подводка к VisionQuest.</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Веном: Последний танец">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Веном: Последний танец<span class="date">октябрь 2024</span></span>
-          <span class="why">Закрывает трилогию Sony.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Паук / Sony</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="What If…?, сезон 3">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">What If…?, сезон 3<span class="date">декабрь 2024</span></span>
-          <span class="why">Финал анимационного цикла.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Анимация</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2025</span><i></i><em>0 / 8</em></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Ваш дружелюбный сосед Человек-паук, сезон 1">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Ваш дружелюбный сосед Человек-паук, сезон 1<span class="date">начало 2025</span></span>
-          <span class="why">Альтернативная версия Питера, вне основного канона.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Анимация</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Капитан Америка: Дивный новый мир">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Капитан Америка: Дивный новый мир<span class="date">февраль 2025</span></span>
-          <span class="why">Сэм как Кэп, Хоакин Торрес, президент Росс и Лидер — вот где стреляет «Невероятный Халк».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Сорвиголова: Рождённый заново, сезон 1">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Сорвиголова: Рождённый заново, сезон 1<span class="date">март 2025</span></span>
-          <span class="why">Мэтт против Фиска-мэра. Смотреть строго после сериалов Netflix.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Громовержцы*">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Громовержцы*<span class="date">май 2025</span></span>
-          <span class="why">Йелена, Баки, Уокер, Призрак, Сентри — вся команда идёт в «Судный день».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Ironheart">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Ironheart<span class="date">июнь 2025</span></span>
-          <span class="why">Рири Уильямс после «Ваканды навеки».</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Фантастическая четвёрка: Первые шаги">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Фантастическая четвёрка: Первые шаги<span class="date">июль 2025</span></span>
-          <span class="why">Знакомство с четвёркой и сцена после титров с Думом.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Глаза Ваканды">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Глаза Ваканды<span class="date">август 2025</span></span>
-          <span class="why">Мини-сериал про историю Ваканды до Т’Чаллы.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Анимация</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Marvel Zombies">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Marvel Zombies<span class="date">осень 2025</span></span>
-          <span class="why">Ответвление от «Что если…?». Для сюжета не нужен.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Анимация</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="year"><span>2026</span><i></i><em>0 / 7</em></div><div class="row p-nice">
-      <label class="main">
-        <input type="checkbox" aria-label="Чудо-человек">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Чудо-человек<span class="date">январь 2026</span></span>
-          <span class="why">Саймон Уильямс и закулисье Голливуда в MCU.</span>
-          <span class="tags"><span class="tag t-nice">Желательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Сорвиголова: Рождённый заново, сезон 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Сорвиголова: Рождённый заново, сезон 2<span class="date">март–май 2026</span></span>
-          <span class="why">Возвращение Джессики Джонс и эскалация войны с Фиском.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Каратель: Последнее убийство">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Каратель: Последнее убийство<span class="date">май 2026</span></span>
-          <span class="why">Спецвыпуск с Бернталом ровно перед «Новым днём».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Люди Икс ’97, сезон 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Люди Икс ’97, сезон 2<span class="date">лето 2026</span></span>
-          <span class="why">Для настроения перед декабрём.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Анимация</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="Человек-паук: Новый день">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Человек-паук: Новый день<span class="date">31 июля 2026</span></span>
-          <span class="why">Уже в прокате. Каратель, Халк и Джин Грей в исполнении Сэди Синк.</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-must">
-      <label class="main">
-        <input type="checkbox" aria-label="VisionQuest">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">VisionQuest<span class="date">14 октября 2026</span></span>
-          <span class="why">Пол Беттани и возвращение Альтрона (Джеймс Спэйдер). Закрывает трилогию «ВандаВижен».</span>
-          <span class="tags"><span class="tag t-must">Обязательно</span><span class="tag t-fr">MCU</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div><div class="row p-opt">
-      <label class="main">
-        <input type="checkbox" aria-label="Ваш дружелюбный сосед Человек-паук, сезон 2">
-        <span class="box" aria-hidden="true">✕</span>
-        <span class="body">
-          <span class="title">Ваш дружелюбный сосед Человек-паук, сезон 2<span class="date">осень 2026</span></span>
-          <span class="why">Вне основного канона.</span>
-          <span class="tags"><span class="tag t-opt">По желанию</span><span class="tag t-fr">Анимация</span></span>
-        </span>
-      </label>
-      <div class="meta">
-        <label>Оценка
-          <select class="rate"><option value="">—</option><option value="10">10</option><option value="9">9</option><option value="8">8</option><option value="7">7</option><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="">
-        </label>
-      </div>
-      <span class="stamp">Просмотрено</span></div></main>
+<main id="list"></main>
 
 <div class="target">
   <div class="k">Финальная точка</div>
@@ -2274,17 +184,13 @@
 const D=[
 {y:1998,t:"Блэйд",d:"август 1998",f:"Marvel / прочее",p:"nice",w:"Уэсли Снайпс возвращается к роли в «Дэдпуле и Росомахе». Продолжения для этого не нужны."},
 {y:2000,t:"Люди Икс",d:"июль 2000",f:"Люди Икс",p:"must",w:"Профессор Икс, Магнето, Циклоп, Мистик — все заявлены в «Судном дне» теми же актёрами."},
-{y:2002,t:"Блэйд 2",d:"март 2002",f:"Marvel / прочее",p:"opt",w:"Только если понравится первый."},
 {y:2002,t:"Человек-паук",d:"май 2002",f:"Паук / Sony",p:"must",w:"Тоби Магуайр и Зелёный гоблин Дефо — оба возвращаются в «Нет пути домой»."},
-{y:2003,t:"Сорвиголова",d:"февраль 2003",f:"Marvel / прочее",p:"opt",w:"С Беном Аффлеком, к MCU отношения не имеет. Нужен разве что как контекст к «Электре»."},
 {y:2003,t:"Люди Икс 2",d:"май 2003",f:"Люди Икс",p:"must",w:"Дебют Ночного Змея (Алан Камминг). Лучшая часть старой трилогии."},
 {y:2004,t:"Человек-паук 2",d:"июнь 2004",f:"Паук / Sony",p:"must",w:"Доктор Осьминог Молины. Его финал напрямую обыгрывается в «Нет пути домой»."},
-{y:2004,t:"Блэйд: Троица",d:"декабрь 2004",f:"Marvel / прочее",p:"opt",w:"Можно пропустить."},
 {y:2005,t:"Электра",d:"январь 2005",f:"Marvel / прочее",p:"opt",w:"Дженнифер Гарнер вернулась к роли в «Дэдпуле и Росомахе»."},
 {y:2005,t:"Фантастическая четвёрка",d:"июль 2005",f:"Marvel / прочее",p:"nice",w:"Крис Эванс в роли Человека-факела — на этом построено его камео в «Дэдпуле и Росомахе». К «Первым шагам» отношения не имеет."},
 {y:2006,t:"Люди Икс: Последняя битва",d:"май 2006",f:"Люди Икс",p:"nice",w:"Зверь Келси Грэммера — он же после титров «Марвелов» и в «Судном дне»."},
 {y:2007,t:"Человек-паук 3",d:"май 2007",f:"Паук / Sony",p:"nice",w:"Песочный человек, который вернулся в «Нет пути домой»."},
-{y:2007,t:"Фантастическая четвёрка: Вторжение Серебряного сёрфера",d:"июнь 2007",f:"Marvel / прочее",p:"opt",w:"Только для полноты картины."},
 {y:2008,t:"Железный человек",d:"май 2008",f:"MCU",p:"must",w:"Начало MCU. Дауни-мл. теперь играет Дума, так что отсюда начинается вся линия."},
 {y:2008,t:"Невероятный Халк",d:"июнь 2008",f:"MCU",p:"must",w:"Происхождение Беннера, Тандерболт Росс и Сэмюэл Стернс. Росс и Стернс вернулись в «Дивном новом мире», Халк — в «Новом дне». Беннера потом переиграл Марк Руффало."},
 {y:2009,t:"Люди Икс: Начало. Росомаха",d:"май 2009",f:"Люди Икс",p:"nice",w:"Та самая версия Дэдпула, над которой шутят в «Дэдпуле и Росомахе»."},
@@ -2300,24 +206,30 @@ const D=[
 {y:2013,t:"Железный человек 3",d:"май 2013",f:"MCU",p:"nice",w:"Тревор Слэттери отсюда всплывает в «Шан-Чи»."},
 {y:2013,t:"Росомаха: Бессмертный",d:"июль 2013",f:"Люди Икс",p:"nice",w:"Мост между «Последней битвой» и «Днями минувшего будущего»."},
 {y:2013,t:"Marvel One-Shot: Агент Картер",d:"сентябрь 2013",f:"MCU",p:"opt",w:"15 минут про Пегги после войны. Пролог к сериалу."},
+{y:2013,t:"Агенты «Щ.И.Т.», сезон 1",d:"сентябрь 2013",f:"ABC",p:"opt",w:"Колсон после «Мстителей». Сюжет сезона прямо упирается в «Другую войну» — смотреть их надо вперемешку."},
 {y:2013,t:"Тор 2: Царство тьмы",d:"ноябрь 2013",f:"MCU",p:"nice",w:"Камень Реальности и Коллекционер."},
 {y:2014,t:"Marvel One-Shot: Да здравствует король",d:"февраль 2014",f:"MCU",p:"opt",w:"Тревор Слэттери в тюрьме. Настоящий Мандарин упомянут здесь, а объяснят его только в «Шан-Чи»."},
 {y:2014,t:"Первый мститель: Другая война",d:"апрель 2014",f:"MCU",p:"must",w:"Баки как Зимний Солдат и развал Щ.И.Т."},
 {y:2014,t:"Новый Человек-паук: Высокое напряжение",d:"май 2014",f:"Паук / Sony",p:"must",w:"Электро Джейми Фокса и смерть Гвен — без этого не работает ключевая сцена Гарфилда в «Нет пути домой»."},
 {y:2014,t:"Люди Икс: Дни минувшего будущего",d:"май 2014",f:"Люди Икс",p:"must",w:"Соединяет старый и молодой составы и переписывает таймлайн."},
 {y:2014,t:"Стражи Галактики",d:"август 2014",f:"MCU",p:"must",w:"Вся космическая команда, которая появится в «Войне бесконечности»."},
+{y:2014,t:"Агенты «Щ.И.Т.», сезон 2",d:"сентябрь 2014",f:"ABC",p:"opt",w:"Нелюди и Терриген. Лучший сезон сериала."},
 {y:2015,t:"Агент Картер, сезон 1",d:"январь 2015",f:"ABC",p:"opt",w:"Пегги основывает Щ.И.Т. Красиво, но её саму вы уже знаете по «Первому мстителю», а герои сериала дальше не появляются."},
 {y:2015,t:"Сорвиголова, сезон 1",d:"апрель 2015",f:"Netflix",p:"must",w:"Мэтт Мёрдок Чарли Кокса и Кингпин. Именно этот Сорвиголова мелькает в «Нет пути домой»."},
 {y:2015,t:"Мстители: Эра Альтрона",d:"май 2015",f:"MCU",p:"must",w:"Альтрон, Вижен, Ванда и Пьетро. Альтрон возвращается в VisionQuest."},
 {y:2015,t:"Человек-муравей",d:"июль 2015",f:"MCU",p:"must",w:"Скотт Лэнг и квантовый мир."},
+{y:2015,t:"Агенты «Щ.И.Т.», сезон 3",d:"сентябрь 2015",f:"ABC",p:"opt",w:"Секретные воины и Хайв."},
 {y:2015,t:"Джессика Джонс, сезон 1",d:"ноябрь 2015",f:"Netflix",p:"nice",w:"Кристен Риттер вернулась во втором сезоне «Рождённого заново»."},
 {y:2016,t:"Агент Картер, сезон 2",d:"январь 2016",f:"ABC",p:"opt",w:"Финал истории Пегги. На дальнейшие фильмы не влияет."},
 {y:2016,t:"Дэдпул",d:"февраль 2016",f:"Люди Икс",p:"must",w:"Уэйд Уилсон, Колосс, Негасимая Тень."},
 {y:2016,t:"Сорвиголова, сезон 2",d:"март 2016",f:"Netflix",p:"must",w:"Дебют Карающего ангела (Джон Бернтал) и Электры. Отсюда растёт Каратель, которого вы видите в «Новом дне»."},
 {y:2016,t:"Первый мститель: Противостояние",d:"май 2016",f:"MCU",p:"must",w:"Раскол Мстителей, дебют Т’Чаллы, Питера Паркера и Земо."},
 {y:2016,t:"Люди Икс: Апокалипсис",d:"май 2016",f:"Люди Икс",p:"nice",w:"Молодые Циклоп, Джина и Ночной Змей."},
+{y:2016,t:"Team Thor",d:"сентябрь 2016",f:"MCU",p:"opt",w:"Короткометражка-мокьюментари: чем Тор занимался во время «Противостояния»."},
+{y:2016,t:"Агенты «Щ.И.Т.», сезон 4",d:"сентябрь 2016",f:"ABC",p:"opt",w:"Призрачный гонщик Робби Рейес и Аида."},
 {y:2016,t:"Люк Кейдж, сезон 1",d:"сентябрь 2016",f:"Netflix",p:"opt",w:"Нужен в основном ради «Защитников»."},
 {y:2016,t:"Доктор Стрэндж",d:"ноябрь 2016",f:"MCU",p:"must",w:"Правила магии и мультивселенной, Вонг и Мордо."},
+{y:2017,t:"Team Thor: Part 2",d:"февраль 2017",f:"MCU",p:"opt",w:"Вторая часть шутки про Тора и Дэррила."},
 {y:2017,t:"Логан",d:"март 2017",f:"Люди Икс",p:"must",w:"Смерть Логана и Лора / Икс-23. На этом целиком построен сюжет «Дэдпула и Росомахи»."},
 {y:2017,t:"Железный кулак, сезон 1",d:"март 2017",f:"Netflix",p:"opt",w:"Самый слабый из четвёрки, но Дэнни нужен в «Защитниках»."},
 {y:2017,t:"Стражи Галактики 2",d:"май 2017",f:"MCU",p:"nice",w:"Мантис, Небула и Йонду."},
@@ -2326,26 +238,36 @@ const D=[
 {y:2017,t:"Нелюди",d:"сентябрь 2017",f:"Netflix / ABC",p:"opt",w:"Единственный пункт, который можно смело выкинуть: никто отсюда дальше не появляется."},
 {y:2017,t:"Тор: Рагнарёк",d:"ноябрь 2017",f:"MCU",p:"must",w:"Валькирия, Корг, новый Тор. Ведёт прямо в «Войну бесконечности»."},
 {y:2017,t:"Каратель, сезон 1",d:"ноябрь 2017",f:"Netflix",p:"must",w:"Происхождение Фрэнка Касла и Микро. Ровно то, чего не объясняют в «Новом дне»."},
+{y:2017,t:"Беглецы, сезон 1",d:"ноябрь 2017",f:"Hulu",p:"opt",w:"Подростки против родителей-суперзлодеев. Изолированная линия."},
+{y:2017,t:"Агенты «Щ.И.Т.», сезон 5",d:"декабрь 2017",f:"ABC",p:"opt",w:"Команда в космосе и разрушенная Земля."},
 {y:2018,t:"Чёрная Пантера",d:"февраль 2018",f:"MCU",p:"must",w:"Ваканда, Шури, М’Баку, Окойе."},
+{y:2018,t:"Team Darryl",d:"март 2018",f:"MCU",p:"opt",w:"Финал трилогии про соседа Тора, теперь с Грандмастером."},
 {y:2018,t:"Джессика Джонс, сезон 2",d:"март 2018",f:"Netflix",p:"opt",w:"Личная история, дальше не отзывается."},
 {y:2018,t:"Мстители: Война бесконечности",d:"апрель 2018",f:"MCU",p:"must",w:"Обязательно."},
 {y:2018,t:"Дэдпул 2",d:"май 2018",f:"Люди Икс",p:"must",w:"Кабель, Домино, Джаггернаут и Икс-Форс."},
+{y:2018,t:"Плащ и Кинжал, сезон 1",d:"июнь 2018",f:"Freeform",p:"opt",w:"Тэнди и Тайрон в Новом Орлеане. С основной линией не пересекается."},
 {y:2018,t:"Люк Кейдж, сезон 2",d:"июнь 2018",f:"Netflix",p:"opt",w:"Можно пропустить."},
 {y:2018,t:"Человек-муравей и Оса",d:"июль 2018",f:"MCU",p:"nice",w:"Джанет ван Дайн и квантовый мир — пригодится в «Квантомании»."},
 {y:2018,t:"Железный кулак, сезон 2",d:"сентябрь 2018",f:"Netflix",p:"opt",w:"Можно пропустить."},
 {y:2018,t:"Веном",d:"октябрь 2018",f:"Паук / Sony",p:"opt",w:"Отдельная линия Sony, пересекается с MCU только в сценах после титров."},
 {y:2018,t:"Сорвиголова, сезон 3",d:"октябрь 2018",f:"Netflix",p:"must",w:"Булсай и возвращение Фиска. Финал перед «Рождённым заново»."},
+{y:2018,t:"Беглецы, сезон 2",d:"декабрь 2018",f:"Hulu",p:"opt",w:"Продолжение истории."},
 {y:2019,t:"Каратель, сезон 2",d:"январь 2019",f:"Netflix",p:"must",w:"Завершает арку Фрэнка до его возвращения в MCU."},
 {y:2019,t:"Капитан Марвел",d:"март 2019",f:"MCU",p:"must",w:"Кэрол, скруллы, Ник Фьюри и Моника Рамбо."},
+{y:2019,t:"Плащ и Кинжал, сезон 2",d:"апрель 2019",f:"Freeform",p:"opt",w:"Кроссовер с Беглецами."},
 {y:2019,t:"Мстители: Финал",d:"апрель 2019",f:"MCU",p:"must",w:"Смерть Тони, уход Стива, разлом времени — база для всей мультивселенной."},
+{y:2019,t:"Агенты «Щ.И.Т.», сезон 6",d:"май 2019",f:"ABC",p:"opt",w:"Сариатос и путешествия во времени."},
 {y:2019,t:"Люди Икс: Тёмный Феникс",d:"июнь 2019",f:"Люди Икс",p:"opt",w:"Формально закрывает линию Fox, но ни на что дальше не влияет."},
 {y:2019,t:"Джессика Джонс, сезон 3",d:"июнь 2019",f:"Netflix",p:"opt",w:"Финал сериалов Netflix, для сюжета не нужен."},
 {y:2019,t:"Человек-паук: Вдали от дома",d:"июль 2019",f:"MCU",p:"must",w:"Мистерио и финал, который запускает «Нет пути домой»."},
+{y:2019,t:"Список дел Питера",d:"сентябрь 2019",f:"MCU",p:"opt",w:"Короткометражка на четыре минуты про Питера после «Вдали от дома»."},
+{y:2019,t:"Беглецы, сезон 3",d:"декабрь 2019",f:"Hulu",p:"opt",w:"Финал сериала."},
+{y:2020,t:"Агенты «Щ.И.Т.», сезон 7",d:"май 2020",f:"ABC",p:"opt",w:"Финальный сезон. Семь лет и 136 серий закрываются здесь."},
+{y:2020,t:"Helstrom",d:"октябрь 2020",f:"Hulu",p:"opt",w:"Последний проект Marvel Television. Связей с MCU практически нет."},
 {y:2021,t:"ВандаВижен",d:"январь 2021",f:"MCU",p:"must",w:"Ванда, Вижен, Белый Вижен и Агата. Прямая подводка к VisionQuest."},
 {y:2021,t:"Сокол и Зимний Солдат",d:"март 2021",f:"MCU",p:"must",w:"Сэм становится Кэпом, дебют Джона Уокера и Хоакина Торреса — оба в «Судном дне»."},
 {y:2021,t:"Локи, сезон 1",d:"июнь 2021",f:"MCU",p:"must",w:"TVA, ветки времени, Тот, Кто Остаётся. Ключ ко всей мультивселенной."},
 {y:2021,t:"Чёрная вдова",d:"июль 2021",f:"MCU",p:"must",w:"Дебют Елены Беловой и Красного Стража."},
-{y:2021,t:"What If…?, сезон 1",d:"август 2021",f:"Анимация",p:"nice",w:"Капитан Картер отсюда появляется живьём в «Мультивселенной безумия»."},
 {y:2021,t:"Шан-Чи и легенда десяти колец",d:"сентябрь 2021",f:"MCU",p:"must",w:"Симу Лю заявлен в «Судном дне». Плюс объясняет Слэттери и кольца."},
 {y:2021,t:"Веном 2",d:"октябрь 2021",f:"Паук / Sony",p:"nice",w:"Сцена после титров связывает Венома с «Нет пути домой»."},
 {y:2021,t:"Вечные",d:"ноябрь 2021",f:"MCU",p:"nice",w:"Целестиалы — их логика всплывает в «Дивном новом мире»."},
@@ -2356,7 +278,6 @@ const D=[
 {y:2022,t:"Доктор Стрэндж: В мультивселенной безумия",d:"май 2022",f:"MCU",p:"must",w:"Иллюминаты, Профессор Икс Патрика Стюарта и понятие «вторжения» миров."},
 {y:2022,t:"Мисс Марвел",d:"июнь 2022",f:"MCU",p:"nice",w:"Камала Хан, нужна для «Марвелов»."},
 {y:2022,t:"Тор: Любовь и гром",d:"июль 2022",f:"MCU",p:"nice",w:"Горр и Джейн. Дальше почти не отзывается."},
-{y:2022,t:"Я — Грут, сезон 1",d:"август 2022",f:"Анимация",p:"opt",w:"Пять коротких мультиков по паре минут."},
 {y:2022,t:"Женщина-Халк",d:"август 2022",f:"MCU",p:"nice",w:"Дженнифер Уолтерс и возвращение Сорвиголовы в MCU."},
 {y:2022,t:"Оборотень ночью",d:"октябрь 2022",f:"MCU",p:"nice",w:"Часовой спецвыпуск. Джек Расселл, Эльза Бладстоун и Мужчина-Тварь — новый угол MCU."},
 {y:2022,t:"Чёрная Пантера: Ваканда навеки",d:"ноябрь 2022",f:"MCU",p:"must",w:"Шури в роли Пантеры и Нэмор — оба заявлены в «Судном дне»."},
@@ -2364,31 +285,22 @@ const D=[
 {y:2023,t:"Человек-муравей и Оса: Квантомания",d:"февраль 2023",f:"MCU",p:"must",w:"Кэсси Лэнг и Канг. Ветку Канга свернули, но Кэсси в «Судном дне»."},
 {y:2023,t:"Стражи Галактики 3",d:"май 2023",f:"MCU",p:"nice",w:"Закрывает команду и объясняет, почему их нет в «Судном дне»."},
 {y:2023,t:"Секретное вторжение",d:"июнь 2023",f:"MCU",p:"nice",w:"Меняет статус Фьюри и Роуди."},
-{y:2023,t:"Я — Грут, сезон 2",d:"сентябрь 2023",f:"Анимация",p:"opt",w:"Ещё пять коротких мультиков."},
 {y:2023,t:"Локи, сезон 2",d:"октябрь 2023",f:"MCU",p:"must",w:"Финал переустраивает древо времени. Локи в «Судном дне» — уже вот этот."},
 {y:2023,t:"Марвелы",d:"ноябрь 2023",f:"MCU",p:"must",w:"Сцена после титров: Зверь Келси Грэммера и первое столкновение вселенных."},
-{y:2023,t:"What If…?, сезон 2",d:"декабрь 2023",f:"Анимация",p:"opt",w:"Для настроения."},
 {y:2024,t:"Эхо",d:"январь 2024",f:"MCU",p:"nice",w:"Майя Лопес и Кингпин перед «Рождённым заново»."},
-{y:2024,t:"Люди Икс ’97, сезон 1",d:"март 2024",f:"Анимация",p:"opt",w:"Отдельная вселенная, но лучший портрет команды."},
 {y:2024,t:"Дэдпул и Росомаха",d:"июль 2024",f:"Люди Икс",p:"must",w:"Дебют Гамбита, камео Блэйда, Электры и Человека-факела. Главный мост между Fox и MCU."},
 {y:2024,t:"Агата: Кто же ещё",d:"сентябрь 2024",f:"MCU",p:"nice",w:"Билли Максимофф и прямая подводка к VisionQuest."},
 {y:2024,t:"Веном: Последний танец",d:"октябрь 2024",f:"Паук / Sony",p:"opt",w:"Закрывает трилогию Sony."},
-{y:2024,t:"What If…?, сезон 3",d:"декабрь 2024",f:"Анимация",p:"opt",w:"Финал анимационного цикла."},
-{y:2025,t:"Ваш дружелюбный сосед Человек-паук, сезон 1",d:"начало 2025",f:"Анимация",p:"opt",w:"Альтернативная версия Питера, вне основного канона."},
 {y:2025,t:"Капитан Америка: Дивный новый мир",d:"февраль 2025",f:"MCU",p:"must",w:"Сэм как Кэп, Хоакин Торрес, президент Росс и Лидер — вот где стреляет «Невероятный Халк»."},
 {y:2025,t:"Сорвиголова: Рождённый заново, сезон 1",d:"март 2025",f:"MCU",p:"must",w:"Мэтт против Фиска-мэра. Смотреть строго после сериалов Netflix."},
 {y:2025,t:"Громовержцы*",d:"май 2025",f:"MCU",p:"must",w:"Йелена, Баки, Уокер, Призрак, Сентри — вся команда идёт в «Судный день»."},
 {y:2025,t:"Ironheart",d:"июнь 2025",f:"MCU",p:"opt",w:"Рири Уильямс после «Ваканды навеки»."},
 {y:2025,t:"Фантастическая четвёрка: Первые шаги",d:"июль 2025",f:"MCU",p:"must",w:"Знакомство с четвёркой и сцена после титров с Думом."},
-{y:2025,t:"Глаза Ваканды",d:"август 2025",f:"Анимация",p:"opt",w:"Мини-сериал про историю Ваканды до Т’Чаллы."},
-{y:2025,t:"Marvel Zombies",d:"осень 2025",f:"Анимация",p:"opt",w:"Ответвление от «Что если…?». Для сюжета не нужен."},
 {y:2026,t:"Чудо-человек",d:"январь 2026",f:"MCU",p:"nice",w:"Саймон Уильямс и закулисье Голливуда в MCU."},
 {y:2026,t:"Сорвиголова: Рождённый заново, сезон 2",d:"март–май 2026",f:"MCU",p:"must",w:"Возвращение Джессики Джонс и эскалация войны с Фиском."},
 {y:2026,t:"Каратель: Последнее убийство",d:"май 2026",f:"MCU",p:"must",w:"Спецвыпуск с Бернталом ровно перед «Новым днём»."},
-{y:2026,t:"Люди Икс ’97, сезон 2",d:"лето 2026",f:"Анимация",p:"opt",w:"Для настроения перед декабрём."},
 {y:2026,t:"Человек-паук: Новый день",d:"31 июля 2026",f:"MCU",p:"must",w:"Уже в прокате. Каратель, Халк и Джин Грей в исполнении Сэди Синк."},
 {y:2026,t:"VisionQuest",d:"14 октября 2026",f:"MCU",p:"must",w:"Пол Беттани и возвращение Альтрона (Джеймс Спэйдер). Закрывает трилогию «ВандаВижен»."},
-{y:2026,t:"Ваш дружелюбный сосед Человек-паук, сезон 2",d:"осень 2026",f:"Анимация",p:"opt",w:"Вне основного канона."}
 ];
 
 const KEY='doomsday-watchlist-v3';
@@ -2429,8 +341,8 @@ function render(){
     const id=slug(it.t), rec=state[id], on=!!rec;
     const row=document.createElement('div');
     row.className=`row p-${it.p}${on?' done':''}`;
-    let opts='<option value="">—</option>';
-    for(let i=10;i>=1;i--) opts+=`<option value="${i}"${rec&&rec.r==i?' selected':''}>${i}</option>`;
+    let cells='<b data-v="" class="clr" title="Убрать оценку">—</b>';
+    for(let i=1;i<=10;i++) cells+=`<b data-v="${i}"${rec&&String(rec.r)===String(i)?' class="on"':''}>${i}</b>`;
     row.innerHTML=`
       <label class="main">
         <input type="checkbox" ${on?'checked':''} aria-label="${it.t}">
@@ -2442,12 +354,9 @@ function render(){
         </span>
       </label>
       <div class="meta">
-        <label>Оценка
-          <select class="rate${rec&&rec.r?' set':''}">${opts}</select>
-        </label>
-        <label>Дата просмотра
-          <input type="date" class="when" value="${rec&&rec.dt?rec.dt:''}">
-        </label>
+        <div class="mg"><span class="lbl">Оценка</span><span class="rate">${cells}</span></div>
+        <div class="mg"><span class="lbl">Дата просмотра</span>
+          <input type="date" class="when" value="${rec&&rec.dt?rec.dt:''}"></div>
       </div>
       <span class="stamp">Просмотрено</span>`;
 
@@ -2455,12 +364,13 @@ function render(){
       if(e.target.checked) state[id]={r:'',dt:today()}; else delete state[id];
       save(); render();
     });
-    row.querySelector('.rate').addEventListener('change',e=>{
+    row.querySelectorAll('.rate b').forEach(b=>b.addEventListener('click',()=>{
       if(!state[id]) return;
-      state[id].r=e.target.value;
-      e.target.classList.toggle('set',!!e.target.value);
+      state[id].r=b.dataset.v;
+      row.querySelectorAll('.rate b').forEach(x=>
+        x.classList.toggle('on', x.dataset.v!=='' && x.dataset.v===b.dataset.v));
       save(); updateHeader();
-    });
+    }));
     row.querySelector('.when').addEventListener('change',e=>{
       if(!state[id]) return;
       state[id].dt=e.target.value; save();
@@ -2496,11 +406,21 @@ document.querySelectorAll('[data-f]').forEach(b=>{
   });
 });
 document.getElementById('reset').addEventListener('click',()=>{
-  if(confirm('Удалить все отметки, оценки и даты?')){ state={}; save(); render(); }
+  if(confirm('Удалить все отметки, оценки и даты?')){ state={__seed:SEED_ID}; save(); render(); }
 });
 
-load().then(s=>{ state=s||{}; render(); });
+const SEED={"железный-человек":{"r":"10","dt":"2026-08-21"},"невероятный-халк":{"r":"8","dt":"2026-08-21"},"люди-икс-начало-росомаха":{"r":"8","dt":"2026-08-24"},"железный-человек-2":{"r":"7","dt":"2026-08-21"},"тор":{"r":"8","dt":"2026-08-21"},"люди-икс-первый-класс":{"r":"6","dt":"2026-08-25"},"первый-мститель":{"r":"6","dt":"2026-08-21"},"мстители":{"r":"9","dt":"2026-08-22"},"новый-человек-паук":{"r":"8","dt":"2026-08-25"},"железный-человек-3":{"r":"9","dt":"2026-08-22"},"росомаха-бессмертный":{"r":"7","dt":"2026-08-25"},"тор-2-царство-тьмы":{"r":"7","dt":"2026-08-22"},"первый-мститель-другая-война":{"r":"8","dt":"2026-08-22"},"мстители-эра-альтрона":{"r":"9","dt":"2026-08-23"},"человек-муравей":{"r":"8","dt":"2026-08-23"},"первый-мститель-противостояние":{"r":"9","dt":"2026-08-23"},"доктор-стрэндж":{"r":"8","dt":"2026-08-23"},"человек-паук-возвращение-домой":{"r":"7","dt":"2026-08-23"},"тор-рагнарёк":{"r":"7","dt":"2026-08-23"},"чёрная-пантера":{"r":"8","dt":"2026-08-24"},"мстители-война-бесконечности":{"r":"9","dt":"2026-08-24"}};
+const SEED_ID='seed-2026-08-a';
+
+load().then(s=>{
+  state=s||{};
+  if(state.__seed!==SEED_ID){
+    for(const k in SEED) state[k]=SEED[k];
+    state.__seed=SEED_ID;
+    save();
+  }
+  render();
+});
 </script>
-
-
-</body></html>
+</body>
+</html>

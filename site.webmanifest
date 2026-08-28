@@ -1,0 +1,15 @@
+{
+  "name": "Marvel Films",
+  "short_name": "Marvel Films",
+  "description": "Хронология Marvel — подготовка к «Судному дню»",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#e6dcc3",
+  "theme_color": "#23262a",
+  "icons": [
+    { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

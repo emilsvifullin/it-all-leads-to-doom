@@ -296,6 +296,14 @@ html.clock-open .app{z-index:auto}
 .card .wm{position:absolute;right:-14px;bottom:-18px;width:120px;height:120px;font-size:96px;line-height:120px;text-align:center;
   opacity:.05;filter:grayscale(1);pointer-events:none;transition:opacity .4s,filter .4s,transform .6s var(--ease-out)}
 .card.done .wm{opacity:.1;filter:none}
+/* Постер в карточке: справа, растворяется в фоне */
+.card .pbg{position:absolute;right:0;top:0;height:100%;width:min(46%,240px);object-fit:cover;object-position:center 22%;pointer-events:none;
+  opacity:.32;filter:saturate(.75);-webkit-mask-image:linear-gradient(90deg,transparent,#000 70%);mask-image:linear-gradient(90deg,transparent,#000 70%);
+  transition:opacity .4s,filter .4s}
+.card.done .pbg{opacity:.5;filter:none}
+@media (hover:hover){.card:hover .pbg{opacity:.5}}
+.card>*:not(.pbg):not(.wm){position:relative}
+.next-poster{width:64px;aspect-ratio:2/3;object-fit:cover;border-radius:6px;flex:0 0 auto;box-shadow:0 6px 20px rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.08)}
 
 .chk{width:30px;height:30px;margin-top:1px;border-radius:9px;border:1.5px solid var(--line-3);display:grid;place-items:center;
   background:rgba(255,255,255,.03);transition:background .2s,border-color .2s,transform .2s var(--ease-out);position:relative}

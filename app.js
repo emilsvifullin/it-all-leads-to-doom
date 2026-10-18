@@ -231,7 +231,7 @@ function rateHTML(f,r){
 function cardHTML(f){
   const r=rec(f.id)||{}, done=!!r.w, hid=!!r.h;
   return `<article class="card p-${f.p}${done?' done':''}${hid?' is-hidden':''}" data-id="${f.id}" id="f-${f.id}">
-    ${ICONS.html(f.i,'wm')}
+    ${f.img?`<img class="pbg" src="${f.img}" alt="" loading="lazy" decoding="async">`:ICONS.html(f.i,'wm')}
     <button type="button" class="chk" data-a="done" aria-pressed="${done}" aria-label="${done?'Снять отметку':'Отметить просмотренным'}: ${esc(f.t)}"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
     <div class="c-body">
       <h3 class="c-title">${esc(f.t)}</h3>
@@ -375,7 +375,7 @@ function renderNext(){
     return;
   }
   box.innerHTML=`<div class="next-k">▶ Следующий на очереди</div>
-    <div class="next-row">${ICONS.html(f.i)}<div><div class="next-t">${esc(f.t)}</div><div class="next-d">${esc(f.d)} · ${esc(f.f)} · ${PRI[f.p].toLowerCase()}</div></div></div>
+    <div class="next-row">${f.img?`<img class="next-poster" src="${f.img}" alt="Постер «${esc(f.t)}»" decoding="async">`:ICONS.html(f.i)}<div><div class="next-t">${esc(f.t)}</div><div class="next-d">${esc(f.d)} · ${esc(f.f)} · ${PRI[f.p].toLowerCase()}</div></div></div>
     <p class="next-why">${esc(f.w)}</p>
     <div class="next-btns"><button type="button" class="btn btn-primary btn-sm" data-act="markNext">✓ Посмотрел</button><button type="button" class="btn btn-sm" data-act="next">Показать в списке</button></div>`;
 }

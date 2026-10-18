@@ -32,11 +32,11 @@
   <div class="bd-fog f1"></div>
   <div class="bd-fog f2"></div>
   <div class="bd-shade"></div>
-  <div class="bd-grain"></div>
 </div>
 
 <div id="intro" class="intro" hidden aria-hidden="true">
   <video class="in-video" id="inVideo" muted playsinline preload="none"></video>
+  <video class="in-logo" id="inLogo" muted playsinline preload="none"></video>
   <div class="in-grid"></div>
   <div class="in-term" id="inTerm"></div>
   <div class="in-stage">
@@ -95,9 +95,7 @@
 
       <section class="clock" id="clock" aria-label="Обратный отсчёт до премьеры">
         <div class="clock-art" aria-hidden="true">
-          <svg class="clock-glass" id="clockGlass" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"></svg>
-          <div class="clock-rays"></div>
-          <div class="clock-dust"></div>
+          <video class="clock-video" id="clockVideo" muted loop playsinline preload="none" disablepictureinpicture></video>
           <div class="clock-fog"></div>
         </div>
         <div class="clock-body">
@@ -188,19 +186,19 @@
   </button>
 </nav>
 
-<dialog class="sheet" id="sheetFilters" aria-labelledby="sfT">
+<dialog class="sheet" id="sheetFilters" tabindex="-1" aria-labelledby="sfT">
   <div class="sheet-grip" aria-hidden="true"></div>
   <div class="sheet-head"><h2 id="sfT">Фильтры и вид</h2><button type="button" class="x" data-close aria-label="Закрыть">✕</button></div>
   <div class="sheet-body" id="filtersHomeSheet"></div>
 </dialog>
 
-<dialog class="sheet" id="sheetSync" aria-labelledby="ssT">
+<dialog class="sheet" id="sheetSync" tabindex="-1" aria-labelledby="ssT">
   <div class="sheet-grip" aria-hidden="true"></div>
   <div class="sheet-head"><h2 id="ssT">Синхронизация</h2><button type="button" class="x" data-close aria-label="Закрыть">✕</button></div>
   <div class="sheet-body" id="syncBody"></div>
 </dialog>
 
-<dialog class="sheet sheet-small" id="joinDialog" aria-labelledby="jdT">
+<dialog class="sheet sheet-small" id="joinDialog" tabindex="-1" aria-labelledby="jdT">
   <div class="sheet-head"><h2 id="jdT">Подключить устройство?</h2></div>
   <div class="sheet-body">
     <p>Это устройство будет использовать коллекцию <b class="mono" id="jdCode"></b>. Отметки с&nbsp;этого устройства объединятся с&nbsp;облачными, и&nbsp;дальше все изменения будут появляться везде.</p>
@@ -221,6 +219,7 @@
         <button type="button" role="radio" data-v="noopt">Без «по желанию» <small data-count="noopt"></small></button>
         <button type="button" role="radio" data-v="must">Только обязательное <small data-count="must"></small></button>
       </div>
+      <p class="f-note">Просмотренное видно всегда, даже если оно «по желанию».</p>
     </div>
     <div class="f-group">
       <div class="f-h">Статус</div>
@@ -239,6 +238,7 @@
       <label class="sw"><input type="checkbox" data-pref="compact"><span class="sw-t">Компактные карточки<small>Без описаний — больше фильмов на экране</small></span><i></i></label>
       <label class="sw"><input type="checkbox" data-pref="collapseDone"><span class="sw-t">Сворачивать просмотренные годы<small>Год, где всё отмечено, складывается в одну строку</small></span><i></i></label>
       <label class="sw"><input type="checkbox" data-pref="showHidden"><span class="sw-t">Показывать скрытые <b id="hiddenN"></b><small>Пункты, которые вы убрали кнопкой «Скрыть»</small></span><i></i></label>
+      <button type="button" class="btn btn-sm btn-ghost" id="unhideAll" hidden>Вернуть все скрытые</button>
     </div>
     <button type="button" class="btn btn-ghost" id="fReset">Сбросить фильтры</button>
   </div>

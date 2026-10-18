@@ -62,6 +62,9 @@ function typoStatic(root){
 const today=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
 const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 const mqDesk=matchMedia('(min-width:1080px)');
+let kbdNav=false;
+addEventListener('keydown',e=>{ if(e.key==='Tab'||e.key.startsWith('Arrow')) kbdNav=true; },true);
+addEventListener('pointerdown',()=>{ kbdNav=false; },true);
 
 /* ============================================================
    Хранилище: всё — пары ключ → запись с меткой времени u.
@@ -212,8 +215,10 @@ function onRemoteChange(changed){
 let q='';
 function visible(f,{status=true,search=true}={}){
   const lvl=pref('level');
-  if(lvl==='must'&&f.p!=='must') return false;
-  if(lvl==='noopt'&&f.p==='opt') return false;
+  if(!isDone(f.id)){          // уровень прячет только непросмотренное — отмеченное «по желанию» остаётся видно
+    if(lvl==='must'&&f.p!=='must') return false;
+    if(lvl==='noopt'&&f.p==='opt') return false;
+  }
   const fr=pref('fr'); if(fr.length&&!fr.includes(f.f)) return false;
   if(isHidden(f.id)&&!pref('showHidden')) return false;
   if(status){ const st=pref('status'); if(st==='left'&&isDone(f.id)) return false; if(st==='done'&&!isDone(f.id)) return false; }
@@ -261,7 +266,7 @@ function cardHTML(f){
     <button type="button" class="chk" data-a="done" aria-pressed="${done}" aria-label="${done?'Снять отметку':'Отметить просмотренным'}: ${esc(f.t)}"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
     <div class="c-body">
       <h3 class="c-title">${ttesc(f.t)}</h3>
-      <div class="c-meta"><span class="pri">${PRI[f.p]}</span><span>${esc(f.d)}</span><span>${esc(f.f)}</span></div>
+      <div class="c-meta"><span class="done-badge" aria-hidden="true">✓ Просмотрено</span><span class="pri">${PRI[f.p]}</span><span>${esc(f.d)}</span><span>${esc(f.f)}</span></div>
       <p class="c-why">${tesc(f.w)}</p>
     </div>
     <div class="c-act"><button type="button" class="icon-btn" data-a="hide" aria-label="${hid?'Вернуть в список':'Скрыть из списка'}" title="${hid?'Вернуть':'Скрыть'}">${hid?I_EYE:I_EYE_OFF}</button></div>
@@ -270,7 +275,7 @@ function cardHTML(f){
 }
 function yearHeadInner(y){
   const s=yearStats(y), p=s.total?Math.round(s.done/s.total*100):0;
-  return `<span class="year-n">${y}</span><span class="year-bar" style="--p:${p}%"><i></i></span><span class="year-c">${s.done}/${s.total}</span>${I_CHEV}`;
+  return `<span class="year-n">${y}</span><span class="year-bar" style="--pp:${p/100}"><i></i></span><span class="year-c">${s.done}/${s.total}</span>${I_CHEV}`;
 }
 function yearSumText(y){
   const s=FILMS.filter(f=>f.y===y&&inScope(f));
@@ -280,8 +285,9 @@ function yearSumText(y){
   return left?`Свёрнуто · впереди ${left}${avg}`:`Всё просмотрено ✓${avg}`;
 }
 
-function renderList(){
+function renderList(fade){
   listEl.classList.toggle('compact',!!pref('compact'));
+  if(fade&&!reduced()&&listEl.animate) listEl.animate([{opacity:.35},{opacity:1}],{duration:260,easing:'ease-out'});
   const groups=new Map();
   for(const f of FILMS){ if(!visible(f)) continue; if(!groups.has(f.y)) groups.set(f.y,[]); groups.get(f.y).push(f); }
   if(!groups.size){
@@ -294,7 +300,7 @@ function renderList(){
     html+=`<section class="year${closed?' closed':''}${s.total&&s.done===s.total?' full':''}" id="y-${y}" data-y="${y}">
       <button type="button" class="year-h" aria-expanded="${!closed}" data-a="year">${yearHeadInner(y)}</button>
       <div class="year-sum">${yearSumText(y)}</div>
-      <div class="year-body"><div class="year-inner">${films.map(cardHTML).join('')}</div></div>
+      <div class="year-body"${closed?' inert':''}><div class="year-inner">${films.map(cardHTML).join('')}</div></div>
     </section>`;
   }
   listEl.innerHTML=html;
@@ -319,7 +325,7 @@ function refreshMeta(){
   $$('.year',listEl).forEach(s=>refreshYear(+s.dataset.y));
   renderStats(); renderNext(); renderYearNav(); syncControls();
 }
-function renderAll(){ syncControls(); renderStats(); renderNext(); renderList(); }
+function renderAll(){ syncControls(); renderStats(); renderNext(); renderList(true); }
 
 // Появление карточек при прокрутке
 let revealIO=null, revealBatch=0, revealFrame=0;
@@ -348,7 +354,7 @@ function renderYearNav(years){
   if(years) navYears=years;
   const h=navYears.map(y=>{
     const s=yearStats(y), p=s.total?Math.round(s.done/s.total*100):0;
-    return `<button type="button" class="ychip${p===100?' full':''}" data-y="${y}" style="--p:${p}%" aria-label="${y}: ${s.done} из ${s.total}">${y}</button>`;
+    return `<button type="button" class="ychip${p===100?' full':''}" data-y="${y}" style="--pp:${p/100}" aria-label="${y}: ${s.done} из ${s.total}">${y}</button>`;
   }).join('');
   $('#yearChips').innerHTML=h; $('#yearGrid').innerHTML=h;
   activeYear=null; onScroll();
@@ -361,6 +367,7 @@ function jumpToYear(y){
 function setClosed(sec,closed){
   sec.classList.toggle('closed',closed);
   $('.year-h',sec).setAttribute('aria-expanded',String(!closed));
+  $('.year-body',sec).inert=closed;
 }
 
 function renderStats(){
@@ -395,6 +402,9 @@ function renderStats(){
 }
 function renderNext(){
   const f=nextFilm(), box=$('#nextCard');
+  const key=f?f.id:'-';
+  if(box.dataset.key&&box.dataset.key!==key&&!reduced()&&box.animate) box.animate([{opacity:0,transform:'translateY(6px)'},{opacity:1,transform:'none'}],{duration:380,easing:'cubic-bezier(.22,1,.36,1)'});
+  box.dataset.key=key;
   $$('[data-next-title]').forEach(e=>e.textContent=f?f.t:'Всё просмотрено');
   if(!f){
     box.innerHTML=`<div class="next-done">${ICONS.html('doom')}<br><b>Вы готовы к Судному дню</b><p class="next-why">Всё из выбранного просмотрено. Дум одобряет. Наверное.</p></div>`;
@@ -418,12 +428,17 @@ function goNext(){
   el.classList.add('in');
   el.scrollIntoView({behavior:reduced()?'auto':'smooth',block:'center'});
   el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
-  setTimeout(()=>{ const b=$('.chk',el); b&&b.focus({preventScroll:true}); },500);
+  if(kbdNav) setTimeout(()=>{ const b=$('.chk',el); b&&b.focus({preventScroll:true}); },500);
 }
 
 /* ============================================================
    Действия с карточками
    ============================================================ */
+function animateOut(el,done){
+  if(!el||reduced()){ done(); return; }
+  el.style.transition='opacity .25s ease, transform .25s ease'; el.style.opacity='0'; el.style.transform='translateX(24px)';
+  setTimeout(done,250);
+}
 function toggleDone(id,fromNext){
   const f=BY_ID[id], was=isDone(id);
   const yBefore=yearStats(f.y);
@@ -436,28 +451,22 @@ function toggleDone(id,fromNext){
     const mustAll=FILMS.filter(x=>x.p==='must'), mustDone=mustAll.filter(x=>isDone(x.id)).length;
     if(f.p==='must'&&mustDone===mustAll.length) toast('Всё обязательное просмотрено. Судный день, мы готовы! 🟢');
     else if(ya.done===ya.total&&yBefore.done<ya.total) toast(`${f.y} — закрыт! ${ya.total} из ${ya.total} ✓`);
-    else if(fromNext) toast(`Отмечено: ${f.t}`,{label:'Отменить',fn:()=>toggleDone(id)});
+    else if(fromNext) toast(`Отмечено:${NB}${f.t}`,{label:'Отменить',fn:()=>toggleDone(id)});
   }else{
-    toast(`Отметка снята: ${f.t}`,{label:'Вернуть',fn:()=>toggleDone(id)});
+    toast(`Отметка снята:${NB}${f.t}`,{label:'Вернуть',fn:()=>toggleDone(id)});
   }
-  const st=pref('status');
-  if((st==='left'&&!was)||(st==='done'&&was)) setTimeout(renderList,1100);
+  if(!visible(f)) setTimeout(()=>{ const c=$('#f-'+CSS.escape(id)); if(c&&!visible(f)) animateOut(c,()=>{ renderList(); refreshMeta(); }); },1100);
 }
 function toggleHidden(id){
   const f=BY_ID[id], hid=isHidden(id);
   setItem(id,{h:hid?0:1});
   if(!hid&&!pref('showHidden')){
-    const el=$('#f-'+CSS.escape(id));
-    const done=()=>{ renderList(); refreshMeta(); };
-    if(el&&!reduced()){
-      el.style.transition='opacity .25s, transform .25s'; el.style.opacity='0'; el.style.transform='translateX(24px)';
-      setTimeout(done,250);
-    }else done();
-    toast(`Скрыто: ${f.t}`,{label:'Отменить',fn:()=>toggleHidden(id)});
+    animateOut($('#f-'+CSS.escape(id)),()=>{ renderList(); refreshMeta(); });
+    toast(`Скрыто:${NB}${f.t}`,{label:'Отменить',fn:()=>toggleHidden(id)});
   }else{
     if(hid&&!$('#f-'+CSS.escape(id))) renderList(); else refreshCard(id);
     refreshMeta();
-    if(hid) toast(`Возвращено: ${f.t}`);
+    if(hid) toast(`Возвращено:${NB}${f.t}`);
   }
 }
 function setRating(id,v,btnEl){
@@ -540,15 +549,17 @@ function syncControls(){
   const fr=pref('fr');
   const base=FILMS.filter(f=>!isHidden(f.id)||pref('showHidden'));
   const byFr=f=>!fr.length||fr.includes(f.f);
-  const cnt={all:base.filter(byFr).length,noopt:base.filter(f=>byFr(f)&&f.p!=='opt').length,must:base.filter(f=>byFr(f)&&f.p==='must').length};
+  const keep=(f,l)=>l==='all'||isDone(f.id)||(l==='must'?f.p==='must':f.p!=='opt');
+  const cnt={all:base.filter(byFr).length,noopt:base.filter(f=>byFr(f)&&keep(f,'noopt')).length,must:base.filter(f=>byFr(f)&&keep(f,'must')).length};
   $$('[data-count]',filtersEl).forEach(s=>s.textContent=cnt[s.dataset.count]);
   const lvl=pref('level');
   $('#frChips',filtersEl).innerHTML=FRS.map(name=>{
-    const n=base.filter(f=>f.f===name&&(lvl==='all'||(lvl==='must'?f.p==='must':f.p!=='opt'))).length;
+    const n=base.filter(f=>f.f===name&&keep(f,lvl)).length;
     return `<button type="button" class="chip" data-fr="${esc(name)}" aria-pressed="${fr.includes(name)}">${esc(name)}<small>${n}</small></button>`;
   }).join('');
   const hidN=FILMS.filter(f=>isHidden(f.id)).length;
   $('#hiddenN',filtersEl).textContent=hidN?`(${hidN})`:'';
+  $('#unhideAll',filtersEl).hidden=!hidN;
   const active=(lvl!=='all')+(pref('status')!=='all')+(fr.length>0)+(!!pref('showHidden'))+(!!pref('compact'));
   const badge=$('#filterBadge'); badge.hidden=!active; badge.textContent=active;
 }
@@ -567,6 +578,11 @@ filtersEl.addEventListener('change',e=>{
 $$('select[data-pref-select]').forEach(sel=>sel.addEventListener('change',()=>{ setPref(sel.dataset.prefSelect,sel.value); renderAll(); }));
 $('#frAll',filtersEl).addEventListener('click',()=>{ setPref('fr',[]); renderAll(); });
 $('#fReset',filtersEl).addEventListener('click',resetFilters);
+$('#unhideAll',filtersEl).addEventListener('click',()=>{
+  const ids=FILMS.filter(f=>isHidden(f.id)).map(f=>f.id); if(!ids.length) return;
+  ids.forEach(id=>put('i:'+id,{h:0})); persist(); Sync.schedule(); renderAll();
+  toast(`Возвращено в${NB}список: ${ids.length}`,{label:'Отменить',fn:()=>{ ids.forEach(id=>put('i:'+id,{h:1})); persist(); Sync.schedule(); renderAll(); }});
+});
 function resetFilters(){
   for(const n of ['level','status','fr']) if(JSON.stringify(pref(n))!==JSON.stringify(DEF_PREFS[n])) setPref(n,DEF_PREFS[n]);
   if(pref('showHidden')) setPref('showHidden',false);
@@ -590,6 +606,7 @@ function openSheet(d){
   if(d.open) return;
   $$('dialog[open]').forEach(x=>x!==d&&closeSheet(x,true));
   d.classList.remove('closing'); d.showModal(); document.documentElement.classList.add('modal-open');
+  d.focus({preventScroll:true});   // иначе браузер ставит фокус на кнопку «закрыть» и рисует вокруг неё рамку
 }
 function closeSheet(d,instant){
   if(!d.open) return;
@@ -739,7 +756,7 @@ document.addEventListener('keydown',e=>{
 
 const toastEl=$('#toast'); let toastT=0;
 function toast(msg,action){
-  toastEl.innerHTML=`<span>${esc(msg)}</span>`+(action?`<button type="button">${esc(action.label)}</button>`:'');
+  toastEl.innerHTML=`<span>${tesc(msg)}</span>`+(action?`<button type="button">${esc(action.label)}</button>`:'');
   if(action) $('button',toastEl).onclick=()=>{ hideToast(); action.fn(); };
   toastEl.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(hideToast,action?5000:2800);
 }
@@ -748,12 +765,12 @@ function hideToast(){ toastEl.classList.remove('show'); }
 /* ============================================================
    Прокрутка: активный год, липкая панель
    ============================================================ */
-const toolbar=$('#toolbar'); let activeYear=null, scrollRaf=0;
+const toolbar=$('#toolbar'); let activeYear=null, scrollRaf=0, tbH=0;
 function onScroll(){
   cancelAnimationFrame(scrollRaf);
   scrollRaf=requestAnimationFrame(()=>{
     toolbar.classList.toggle('stuck',toolbar.getBoundingClientRect().top<=1);
-    const lim=(parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--tb-h'))||0)+40;
+    const lim=tbH+40;
     let cur=null;
     for(const s of $$('.year',listEl)){ if(s.getBoundingClientRect().top<=lim) cur=s.dataset.y; else break; }
     if(!cur){ const first=$('.year',listEl); cur=first&&first.dataset.y; }
@@ -768,7 +785,7 @@ addEventListener('scroll',onScroll,{passive:true});
 
 function measure(){
   const root=document.documentElement.style;
-  root.setProperty('--tb-h',toolbar.offsetHeight+'px');
+  tbH=toolbar.offsetHeight; root.setProperty('--tb-h',tbH+'px');
   const tb=$('.tabbar'); const vis=getComputedStyle(tb).display!=='none';
   root.setProperty('--tab-h',vis?tb.offsetHeight+'px':'0px');
 }
@@ -777,7 +794,7 @@ addEventListener('resize',measure);
 mqDesk.addEventListener?mqDesk.addEventListener('change',()=>{ placeFilters(); measure(); renderYearNav(); }):mqDesk.addListener(()=>{ placeFilters(); measure(); });
 
 /* ============================================================
-   Часы Судного дня: витраж + отсчёт в месяцах, днях, часах…
+   Часы Судного дня: тронный зал Дума + отсчёт в месяцах, днях, часах…
    ============================================================ */
 const pad=n=>String(n).padStart(2,'0');
 const plural=(n,f)=>{ const a=n%10,b=n%100; return f[(b>10&&b<20)?2:a===1?0:(a>=2&&a<=4)?1:2]; };
@@ -804,40 +821,6 @@ function tick(){
   const se=$('#cdS'); if(!reduced()){ se.classList.remove('tick'); void se.offsetWidth; se.classList.add('tick'); }
 }
 
-// Готический витраж рисуется кодом: стрельчатые окна, свинцовая решётка, грязное стекло, силуэт Дума
-function buildGlass(){
-  const svg=$('#clockGlass'); if(!svg) return;
-  const lancet=(cx,w,top,bot)=>{ const x=cx-w/2, r=w, sh=top+w*.866; return `M${x} ${bot}V${sh}A${r} ${r} 0 0 1 ${cx} ${top}A${r} ${r} 0 0 1 ${x+w} ${sh}V${bot}Z`; };
-  const wins=[[800,250,90],[505,190,210],[1095,190,210],[255,160,320],[1345,160,320],[45,130,430],[1555,130,430]];
-  let defs='', body='';
-  wins.forEach(([cx,w,top],i)=>{
-    const d=lancet(cx,w,top,930);
-    defs+=`<clipPath id="w${i}"><path d="${d}"/></clipPath>`;
-    let bars=''; for(let y=top+w*.9;y<930;y+=150) bars+=`M${cx-w/2} ${y}H${cx+w/2}`;
-    body+=`<g clip-path="url(#w${i})"><rect x="${cx-w/2}" y="${top}" width="${w}" height="${930-top}" fill="url(#gl)"/>
-      <rect x="${cx-w/2}" y="${top}" width="${w}" height="${930-top}" fill="url(#lat)"/>
-      <rect x="${cx-w/2}" y="${top}" width="${w}" height="${930-top}" filter="url(#grime)"/>
-      <path d="${bars}" stroke="#020403" stroke-width="8"/></g>
-      <path d="${d}" fill="none" stroke="#020403" stroke-width="18"/><path d="${d}" fill="none" stroke="rgba(150,230,170,.12)" stroke-width="2"/>`;
-  });
-  // ажур центрального окна: средник и круг
-  body+=`<path d="M800 300V930" stroke="#020403" stroke-width="12"/><circle cx="800" cy="250" r="58" fill="none" stroke="#020403" stroke-width="12"/>
-    <circle cx="800" cy="250" r="22" fill="none" stroke="#020403" stroke-width="8"/>`;
-  // силуэт Дума в капюшоне
-  const hood='M800 560c-44 0-68 42-71 92-2 40 10 68 26 84-62 26-114 96-150 194h390c-36-98-88-168-150-194 16-16 28-44 26-84-3-50-27-92-71-92z';
-  body+=`<g><path d="${hood}" fill="#000"/>
-    <path d="${hood}" fill="none" stroke="url(#rim)" stroke-width="5"/>
-    <path d="M800 604c-24 0-37 21-37 52 0 33 15 60 37 60s37-27 37-60c0-31-13-52-37-52z" fill="#050806"/>
-    <path d="M779 648h16v4h-16zM805 648h16v4h-16z" fill="#42ff8e" opacity=".85"/></g>`;
-  svg.innerHTML=`<defs>
-    <radialGradient id="gl" cx="800" cy="300" r="900" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#f2ffe0"/><stop offset=".22" stop-color="#9df5a0"/><stop offset=".5" stop-color="#3fae5c"/><stop offset=".8" stop-color="#14552a"/><stop offset="1" stop-color="#06210f"/></radialGradient>
-    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(200,255,210,.55)"/><stop offset=".45" stop-color="rgba(140,230,160,.18)"/><stop offset="1" stop-color="rgba(0,0,0,0)"/></linearGradient>
-    <pattern id="lat" width="54" height="74" patternUnits="userSpaceOnUse"><path d="M27 0L54 37L27 74L0 37Z" fill="none" stroke="#030a05" stroke-width="4.5"/></pattern>
-    <filter id="grime" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="4" seed="11"/>
-      <feColorMatrix values="0 0 0 0 0  0 0 0 0 .04  0 0 0 0 .01  0 0 0 -2.2 1.35"/></filter>
-    ${defs}</defs><rect width="1600" height="900" fill="#050a06"/>${body}`;
-}
 function fitClock(){
   const c=$('#clock'), cells=$('#clockCells'); if(!c||!cells) return;
   const full=c.classList.contains('full');
@@ -848,15 +831,50 @@ function fitClock(){
 }
 function toggleClockFull(force){
   const c=$('#clock'), on=force!==undefined?force:!c.classList.contains('full');
-  c.classList.toggle('full',on); document.documentElement.classList.toggle('clock-open',on); fitClock();
-  const b=$('.clock-btn',c); b.setAttribute('aria-label',on?'Закрыть часы':'Часы на весь экран'); b.title=on?'Закрыть':'На весь экран';
-  try{
-    if(on&&c.requestFullscreen&&!document.fullscreenElement) c.requestFullscreen().catch(()=>{});
-    if(!on&&document.fullscreenElement) document.exitFullscreen().catch(()=>{});
-  }catch(e){}
+  if(on===c.classList.contains('full')) return;
+  const apply=()=>{
+    c.classList.toggle('full',on); document.documentElement.classList.toggle('clock-open',on);
+    const b=$('.clock-btn',c); b.setAttribute('aria-label',on?'Закрыть часы':'Часы на весь экран'); b.title=on?'Закрыть':'На весь экран';
+    fitClock(); ClockVideo.pick();
+  };
+  if(!on&&document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+  if(document.startViewTransition&&!reduced()){
+    // карточка часов плавно «вырастает» до полного экрана и обратно
+    c.style.viewTransitionName='clock';
+    const vt=document.startViewTransition(apply);
+    vt.finished.finally(()=>{ c.style.viewTransitionName=''; if(on&&matchMedia('(hover:hover)').matches&&c.requestFullscreen&&!document.fullscreenElement) c.requestFullscreen().catch(()=>{}); });
+  }else{
+    apply();
+    if(!reduced()&&c.animate) c.animate(on?[{opacity:0,transform:'scale(.96)'},{opacity:1,transform:'none'}]:[{opacity:0,transform:'scale(1.02)'},{opacity:1,transform:'none'}],{duration:380,easing:'cubic-bezier(.22,1,.36,1)'});
+  }
 }
 document.addEventListener('fullscreenchange',()=>{ if(!document.fullscreenElement&&$('#clock').classList.contains('full')) toggleClockFull(false); });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&$('#clock').classList.contains('full')) toggleClockFull(false); });
+
+const ClockVideo={
+  v:null, near:false,
+  src(){ const c=$('#clock'); /* почти квадратная карточка на телефоне — вертикальная версия чётче */ const port=c.clientWidth<c.clientHeight*1.5; return port?{mp4:'media/throne-portrait.mp4',jpg:'media/throne-portrait.jpg'}:{mp4:'media/throne.mp4',jpg:'media/throne.jpg'}; },
+  pick(){
+    const c=$('#clock'), s=this.src();
+    $('.clock-art',c).style.setProperty('--clock-poster',`url("${s.jpg}")`);
+    if(reduced()||saveData()||!this.near) return;
+    if(!this.v.src.endsWith(s.mp4)){ this.v.classList.remove('on'); this.v.src=s.mp4; this.v.load(); }
+    this.v.play().catch(()=>{});
+  },
+  init(){
+    this.v=$('#clockVideo');
+    this.v.addEventListener('playing',()=>this.v.classList.add('on'));
+    this.pick();
+    const c=$('#clock');
+    if('IntersectionObserver' in window) new IntersectionObserver(([e])=>{
+      this.near=e.isIntersecting; c.classList.toggle('is-off',!e.isIntersecting);
+      if(e.isIntersecting) this.pick(); else this.v.pause();
+    },{rootMargin:'200px 0px'}).observe(c);
+    else{ this.near=true; this.pick(); }
+    let rt=0; addEventListener('resize',()=>{ clearTimeout(rt); rt=setTimeout(()=>this.pick(),300); });
+    document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&this.near) this.pick(); else this.v.pause(); });
+  },
+};
 
 /* ============================================================
    Заставка: терминал → кольцо героев → Дум → название
@@ -871,8 +889,8 @@ function playIntro(force){
     try{ if(sessionStorage.getItem('doom-intro')) return; sessionStorage.setItem('doom-intro','1'); }catch(e){ return; }
     if(reduced()) return;
   }
-  const el=$('#intro'), term=$('#inTerm'), ring=$('#inRing'), iv=$('#inVideo');
-  if(!saveData()){ iv.src=vidSrc().mp4; iv.load(); }
+  const el=$('#intro'), term=$('#inTerm'), ring=$('#inRing'), iv=$('#inVideo'), il=$('#inLogo');
+  if(!saveData()){ iv.src=vidSrc().mp4; iv.load(); il.src='media/logo.mp4'; il.load(); }
   el.hidden=false; el.className='intro'; document.body.classList.add('intro-on');
   const timers=[], at=(ms,fn)=>timers.push(setTimeout(fn,ms));
   let ended=false;
@@ -901,16 +919,20 @@ function playIntro(force){
     t+=txt.length*16+180;
   });
   // 2–4. кольцо, Дум, название
-  at(1300,()=>el.classList.add('p2'));
-  at(3100,()=>el.classList.add('p3'));
-  at(4300,()=>{ el.classList.add('p4'); if(iv.src){ iv.currentTime=0; iv.play().catch(()=>{}); } });
-  at(7600,finish);
+  at(1200,()=>el.classList.add('p2'));
+  at(2800,()=>el.classList.add('p3'));
+  const showTitle=()=>{ el.classList.add('p4'); if(iv.src){ iv.currentTime=0; iv.play().catch(()=>{}); } at(3000,finish); };
+  at(4300,()=>{
+    // логотип Marvel Studios — если успел загрузиться; на медленной сети сразу название
+    if(il.src&&il.readyState>=3){ el.classList.add('pL'); il.currentTime=0; il.play().catch(()=>{}); at(2800,showTitle); }
+    else showTitle();
+  });
 
   function finish(){
     if(ended) return; ended=true;
     timers.forEach(clearTimeout); el.classList.add('out');
     document.removeEventListener('keydown',onKey);
-    setTimeout(()=>{ el.hidden=true; el.className='intro'; ring.innerHTML=''; term.innerHTML=''; iv.pause(); iv.removeAttribute('src'); document.body.classList.remove('intro-on'); },600);
+    setTimeout(()=>{ el.hidden=true; el.className='intro'; ring.innerHTML=''; term.innerHTML=''; iv.pause(); iv.removeAttribute('src'); il.pause(); il.removeAttribute('src'); document.body.classList.remove('intro-on'); },600);
   }
   const onKey=e=>{ if(['Escape',' ','Enter'].includes(e.key)){ e.preventDefault(); finish(); } };
   el.onclick=finish; document.addEventListener('keydown',onKey);
@@ -935,6 +957,7 @@ function setupBackdrop(){
   let rt=0; addEventListener('resize',()=>{ clearTimeout(rt); rt=setTimeout(apply,300); });
   // не тратим батарею, когда шапка не видна
   if('IntersectionObserver' in window) new IntersectionObserver(([e])=>{
+    bd.classList.toggle('is-off',!e.isIntersecting);
     if(!v.src) return; e.isIntersecting?v.play().catch(()=>{}):v.pause();
   }).observe(bd);
   document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&v.src) v.play().catch(()=>{}); });
@@ -949,11 +972,12 @@ placeFilters();
 renderAll();
 renderSyncIndicators();
 measure();
-buildGlass(); tick(); setInterval(tick,1000); fitClock();
+tick(); setInterval(tick,1000); fitClock();
 if(document.fonts) document.fonts.ready.then(fitClock);
 addEventListener('resize',fitClock);
 document.addEventListener('fullscreenchange',()=>setTimeout(fitClock,50));
 setupBackdrop();
+ClockVideo.init();
 playIntro(false);
 checkHashJoin();
 addEventListener('hashchange',checkHashJoin);

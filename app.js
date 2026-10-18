@@ -701,6 +701,7 @@ document.addEventListener('click',e=>{
   else if(act==='sync'){ renderSync(); openSheet($('#sheetSync')); Sync.schedule(0); }
   else if(act==='top'){ closeSheets(); scrollTo({top:0,behavior:reduced()?'auto':'smooth'}); }
   else if(act==='intro') playIntro(true);
+  else if(act==='clock') toggleClockFull();
   else if(act==='resetFilters') resetFilters();
 });
 document.addEventListener('click',e=>{ const c=e.target.closest('.ychip'); if(c){ closeSheets(); jumpToYear(+c.dataset.y); } });
@@ -750,48 +751,167 @@ addEventListener('resize',measure);
 mqDesk.addEventListener?mqDesk.addEventListener('change',()=>{ placeFilters(); measure(); renderYearNav(); }):mqDesk.addListener(()=>{ placeFilters(); measure(); });
 
 /* ============================================================
-   Обратный отсчёт
+   Часы Судного дня: витраж + отсчёт в месяцах, днях, часах…
    ============================================================ */
 const pad=n=>String(n).padStart(2,'0');
+const plural=(n,f)=>{ const a=n%10,b=n%100; return f[(b>10&&b<20)?2:a===1?0:(a>=2&&a<=4)?1:2]; };
+const UNITS={mo:['месяц','месяца','месяцев'],d:['день','дня','дней'],h:['час','часа','часов'],m:['минута','минуты','минут'],s:['секунда','секунды','секунд']};
+function addMonths(d,n){ const r=new Date(d); const day=r.getDate(); r.setDate(1); r.setMonth(r.getMonth()+n); r.setDate(Math.min(day,new Date(r.getFullYear(),r.getMonth()+1,0).getDate())); return r; }
+function countdownParts(now,end){
+  if(end<=now) return null;
+  let mo=(end.getFullYear()-now.getFullYear())*12+end.getMonth()-now.getMonth();
+  let base=addMonths(now,mo); if(base>end){ mo--; base=addMonths(now,mo); }
+  const s=Math.floor((end-base)/1000);
+  return {mo,d:Math.floor(s/86400),h:Math.floor(s%86400/3600),m:Math.floor(s%3600/60),s:s%60};
+}
+let lastParts={};
 function tick(){
-  const ms=PREMIERE-Date.now();
-  if(ms<=0){ $('#cdD').textContent='0'; ['cdH','cdM','cdS'].forEach(i=>$('#'+i).textContent='00'); $('.cd-label').innerHTML='<b>Премьера состоялась!</b>'; return; }
-  const s=Math.floor(ms/1000);
-  $('#cdD').textContent=Math.floor(s/86400);
-  $('#cdH').textContent=pad(Math.floor(s%86400/3600));
-  $('#cdM').textContent=pad(Math.floor(s%3600/60));
-  const se=$('#cdS'); se.textContent=pad(s%60);
-  if(!reduced()){ se.classList.remove('tick'); void se.offsetWidth; se.classList.add('tick'); }
+  const p=countdownParts(new Date(),PREMIERE);
+  if(!p){ ['cdMo','cdD','cdH','cdM','cdS'].forEach(i=>$('#'+i).textContent='00'); $('.clock-k').textContent='Судный день настал'; $('#clockDate').textContent='Премьера состоялась · бегом в кино'; return; }
+  const map={mo:'cdMo',d:'cdD',h:'cdH',m:'cdM',s:'cdS'};
+  for(const k in map){
+    if(lastParts[k]===p[k]) continue;
+    $('#'+map[k]).textContent=pad(p[k]);
+    $(`[data-u="${k}"]`).textContent=plural(p[k],UNITS[k]);
+  }
+  lastParts=p;
+  const se=$('#cdS'); if(!reduced()){ se.classList.remove('tick'); void se.offsetWidth; se.classList.add('tick'); }
 }
 
+// Готический витраж рисуется кодом: стрельчатые окна, свинцовая решётка, грязное стекло, силуэт Дума
+function buildGlass(){
+  const svg=$('#clockGlass'); if(!svg) return;
+  const lancet=(cx,w,top,bot)=>{ const x=cx-w/2, r=w, sh=top+w*.866; return `M${x} ${bot}V${sh}A${r} ${r} 0 0 1 ${cx} ${top}A${r} ${r} 0 0 1 ${x+w} ${sh}V${bot}Z`; };
+  const wins=[[800,250,90],[505,190,210],[1095,190,210],[255,160,320],[1345,160,320],[45,130,430],[1555,130,430]];
+  let defs='', body='';
+  wins.forEach(([cx,w,top],i)=>{
+    const d=lancet(cx,w,top,930);
+    defs+=`<clipPath id="w${i}"><path d="${d}"/></clipPath>`;
+    let bars=''; for(let y=top+w*.9;y<930;y+=150) bars+=`M${cx-w/2} ${y}H${cx+w/2}`;
+    body+=`<g clip-path="url(#w${i})"><rect x="${cx-w/2}" y="${top}" width="${w}" height="${930-top}" fill="url(#gl)"/>
+      <rect x="${cx-w/2}" y="${top}" width="${w}" height="${930-top}" fill="url(#lat)"/>
+      <rect x="${cx-w/2}" y="${top}" width="${w}" height="${930-top}" filter="url(#grime)"/>
+      <path d="${bars}" stroke="#020403" stroke-width="8"/></g>
+      <path d="${d}" fill="none" stroke="#020403" stroke-width="18"/><path d="${d}" fill="none" stroke="rgba(150,230,170,.12)" stroke-width="2"/>`;
+  });
+  // ажур центрального окна: средник и круг
+  body+=`<path d="M800 300V930" stroke="#020403" stroke-width="12"/><circle cx="800" cy="250" r="58" fill="none" stroke="#020403" stroke-width="12"/>
+    <circle cx="800" cy="250" r="22" fill="none" stroke="#020403" stroke-width="8"/>`;
+  // силуэт Дума в капюшоне
+  const hood='M800 560c-44 0-68 42-71 92-2 40 10 68 26 84-62 26-114 96-150 194h390c-36-98-88-168-150-194 16-16 28-44 26-84-3-50-27-92-71-92z';
+  body+=`<g><path d="${hood}" fill="#000"/>
+    <path d="${hood}" fill="none" stroke="url(#rim)" stroke-width="5"/>
+    <path d="M800 604c-24 0-37 21-37 52 0 33 15 60 37 60s37-27 37-60c0-31-13-52-37-52z" fill="#050806"/>
+    <path d="M779 648h16v4h-16zM805 648h16v4h-16z" fill="#42ff8e" opacity=".85"/></g>`;
+  svg.innerHTML=`<defs>
+    <radialGradient id="gl" cx="800" cy="300" r="900" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f2ffe0"/><stop offset=".22" stop-color="#9df5a0"/><stop offset=".5" stop-color="#3fae5c"/><stop offset=".8" stop-color="#14552a"/><stop offset="1" stop-color="#06210f"/></radialGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(200,255,210,.55)"/><stop offset=".45" stop-color="rgba(140,230,160,.18)"/><stop offset="1" stop-color="rgba(0,0,0,0)"/></linearGradient>
+    <pattern id="lat" width="54" height="74" patternUnits="userSpaceOnUse"><path d="M27 0L54 37L27 74L0 37Z" fill="none" stroke="#030a05" stroke-width="4.5"/></pattern>
+    <filter id="grime" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".011" numOctaves="4" seed="11"/>
+      <feColorMatrix values="0 0 0 0 0  0 0 0 0 .04  0 0 0 0 .01  0 0 0 -2.2 1.35"/></filter>
+    ${defs}</defs><rect width="1600" height="900" fill="#050a06"/>${body}`;
+}
+function fitClock(){
+  const c=$('#clock'), cells=$('#clockCells'); if(!c||!cells) return;
+  const full=c.classList.contains('full');
+  const avail=c.clientWidth-(full?48:28);
+  let fs=Math.min(full?120:60,avail*(full?.11:.085));
+  cells.style.fontSize=fs+'px';
+  const w=cells.scrollWidth; if(w>avail) cells.style.fontSize=Math.floor(fs*avail/w)+'px';
+}
+function toggleClockFull(force){
+  const c=$('#clock'), on=force!==undefined?force:!c.classList.contains('full');
+  c.classList.toggle('full',on); document.documentElement.classList.toggle('clock-open',on); fitClock();
+  const b=$('.clock-btn',c); b.setAttribute('aria-label',on?'Закрыть часы':'Часы на весь экран'); b.title=on?'Закрыть':'На весь экран';
+  try{
+    if(on&&c.requestFullscreen&&!document.fullscreenElement) c.requestFullscreen().catch(()=>{});
+    if(!on&&document.fullscreenElement) document.exitFullscreen().catch(()=>{});
+  }catch(e){}
+}
+document.addEventListener('fullscreenchange',()=>{ if(!document.fullscreenElement&&$('#clock').classList.contains('full')) toggleClockFull(false); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&$('#clock').classList.contains('full')) toggleClockFull(false); });
+
 /* ============================================================
-   Заставка в стиле Marvel → Судный день
+   Заставка: терминал → кольцо героев → Дум → название
    ============================================================ */
+const INTRO_HEROES=['spider','iron','shield','hammer','hulk','panther','strange','deadpool','wolverine','loki','venom','cmarvel','daredevil','wanda'];
+function fitText(el,maxW,maxPx){
+  el.style.fontSize=maxPx+'px';
+  const w=el.scrollWidth; if(w>maxW) el.style.fontSize=Math.floor(maxPx*maxW/w)+'px';
+}
 function playIntro(force){
   if(!force){
     try{ if(sessionStorage.getItem('doom-intro')) return; sessionStorage.setItem('doom-intro','1'); }catch(e){ return; }
     if(reduced()) return;
   }
-  const el=$('#intro'), flip=$('#introFlip');
+  const el=$('#intro'), term=$('#inTerm'), ring=$('#inRing'), iv=$('#inVideo');
+  if(!saveData()){ iv.src=vidSrc().mp4; iv.load(); }
   el.hidden=false; el.className='intro'; document.body.classList.add('intro-on');
-  const pool=FILMS.filter(f=>f.p==='must').sort(()=>Math.random()-.5).slice(0,18);
-  const pal=[['#9e0f14','#ff3b40'],['#13308a','#3f7bff'],['#0f6b37','#3dff9a'],['#8a5a00','#ffc23d'],['#4b1580','#a66bff'],['#2a3038','#8b97a5'],['#b3102a','#ff6a3d']];
-  let i=0, delay=150, ended=false; const timers=[];
-  const step=()=>{
-    if(i>=pool.length){ el.classList.add('logo'); timers.push(setTimeout(()=>el.classList.add('doom'),1000),setTimeout(finish,1800)); return; }
-    const f=pool[i], c=pal[i%pal.length];
-    flip.innerHTML=`<div class="pg" style="background:linear-gradient(${Math.round(Math.random()*360)}deg,${c[0]},${c[1]})">${ICONS.html(f.i)}<span>${esc(f.t)}</span></div>`;
-    i++; delay=Math.max(55,delay*.86); timers.push(setTimeout(step,delay));
-  };
+  const timers=[], at=(ms,fn)=>timers.push(setTimeout(fn,ms));
+  let ended=false;
+
+  // кольцо
+  ring.innerHTML=INTRO_HEROES.map((k,i)=>`<div class="ri" style="--a:${i*360/INTRO_HEROES.length}deg;--i:${i}">${ICONS.html(k)}</div>`).join('');
+  // название: подгоняем под ширину экрана
+  const days=Math.max(0,Math.ceil((PREMIERE-Date.now())/864e5));
+  $('#inSub').textContent=days?`Премьера 18.12.2026 · осталось ${days} дн.`:'Премьера состоялась';
+  const fit=()=>fitText($('#inMain'),Math.min(innerWidth-40,900),Math.min(96,innerWidth*.16));
+  fit(); if(document.fonts) document.fonts.ready.then(fit);   // шрифт может догрузиться позже — подгоняем ещё раз
+
+  // 1. терминал
+  const lines=[
+    ['> ПРОТОКОЛ «СУДНЫЙ ДЕНЬ»: ЗАПУСК',''],
+    [`> ХРОНОЛОГИЯ: ${FILMS.length} ОБЪЕКТОВ ЗАГРУЖЕНО`,''],
+    ['> МУЛЬТИВСЕЛЕННАЯ: НЕСТАБИЛЬНА','warn'],
+    ['> ЛАТВЕРИЯ ЖДЁТ…',''],
+  ];
+  term.innerHTML='';
+  let t=250;
+  lines.forEach(([txt,cls])=>{
+    const start=t;
+    at(start,()=>{ $$('.cur',term).forEach(x=>x.classList.remove('cur')); const d=document.createElement('div'); d.className=cls+' cur'; term.appendChild(d);
+      [...txt].forEach((ch,j)=>at(j*16,()=>{ d.textContent+=ch; })); });
+    t+=txt.length*16+180;
+  });
+  // 2–4. кольцо, Дум, название
+  at(1300,()=>el.classList.add('p2'));
+  at(3100,()=>el.classList.add('p3'));
+  at(4300,()=>{ el.classList.add('p4'); if(iv.src){ iv.currentTime=0; iv.play().catch(()=>{}); } });
+  at(7600,finish);
+
   function finish(){
     if(ended) return; ended=true;
     timers.forEach(clearTimeout); el.classList.add('out');
     document.removeEventListener('keydown',onKey);
-    setTimeout(()=>{ el.hidden=true; el.className='intro'; flip.innerHTML=''; document.body.classList.remove('intro-on'); },550);
+    setTimeout(()=>{ el.hidden=true; el.className='intro'; ring.innerHTML=''; term.innerHTML=''; iv.pause(); iv.removeAttribute('src'); document.body.classList.remove('intro-on'); },600);
   }
   const onKey=e=>{ if(['Escape',' ','Enter'].includes(e.key)){ e.preventDefault(); finish(); } };
   el.onclick=finish; document.addEventListener('keydown',onKey);
-  step();
+}
+
+/* ============================================================
+   Видео: фон шапки и финал заставки
+   ============================================================ */
+const vidSrc=()=>{ const port=innerHeight>innerWidth*1.1; return {mp4:port?'media/doom-portrait.mp4':'media/doom.mp4',jpg:port?'media/doom-portrait.jpg':'media/doom.jpg'}; };
+const saveData=()=>!!(navigator.connection&&navigator.connection.saveData);
+function setupBackdrop(){
+  const bd=$('.backdrop'), v=$('#bdVideo');
+  const apply=()=>{
+    const src=vidSrc();
+    bd.style.setProperty('--bd-poster',`url("${src.jpg}")`);
+    if(reduced()||saveData()){ v.removeAttribute('src'); v.classList.remove('on'); return; }
+    if(!v.src.endsWith(src.mp4)){ v.classList.remove('on'); v.src=src.mp4; v.load(); }
+    const p=v.play(); if(p&&p.catch) p.catch(()=>{});
+  };
+  v.addEventListener('playing',()=>v.classList.add('on'));
+  apply();
+  let rt=0; addEventListener('resize',()=>{ clearTimeout(rt); rt=setTimeout(apply,300); });
+  // не тратим батарею, когда шапка не видна
+  if('IntersectionObserver' in window) new IntersectionObserver(([e])=>{
+    if(!v.src) return; e.isIntersecting?v.play().catch(()=>{}):v.pause();
+  }).observe(bd);
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&v.src) v.play().catch(()=>{}); });
 }
 
 /* ============================================================
@@ -802,7 +922,11 @@ placeFilters();
 renderAll();
 renderSyncIndicators();
 measure();
-tick(); setInterval(tick,1000);
+buildGlass(); tick(); setInterval(tick,1000); fitClock();
+if(document.fonts) document.fonts.ready.then(fitClock);
+addEventListener('resize',fitClock);
+document.addEventListener('fullscreenchange',()=>setTimeout(fitClock,50));
+setupBackdrop();
 playIntro(false);
 checkHashJoin();
 addEventListener('hashchange',checkHashJoin);

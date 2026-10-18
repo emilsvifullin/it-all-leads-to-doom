@@ -29,13 +29,28 @@
   <div class="bg-scan"></div>
 </div>
 
+<div class="backdrop" aria-hidden="true">
+  <video class="bd-video" id="bdVideo" muted loop playsinline preload="none" disablepictureinpicture></video>
+  <div class="bd-fog f1"></div>
+  <div class="bd-fog f2"></div>
+  <div class="bd-shade"></div>
+  <div class="bd-grain"></div>
+</div>
+
 <div id="intro" class="intro" hidden aria-hidden="true">
-  <div class="intro-stage">
-    <div class="intro-flip" id="introFlip"></div>
-    <div class="intro-logo" id="introLogo">
-      <span class="il-top">Дорога к</span>
-      <span class="il-main">Судному дню</span>
-    </div>
+  <video class="in-video" id="inVideo" muted playsinline preload="none"></video>
+  <div class="in-grid"></div>
+  <div class="in-term" id="inTerm"></div>
+  <div class="in-stage">
+    <div class="in-ring" id="inRing"></div>
+    <div class="in-wave"></div>
+    <div class="in-wave w2"></div>
+    <svg class="ic in-doom" viewBox="0 0 32 32"><use href="#i-doom"/></svg>
+  </div>
+  <div class="in-title" id="inTitle">
+    <span class="it-top">Дорога к</span>
+    <span class="it-main" id="inMain">Судному дню</span>
+    <span class="it-sub" id="inSub"></span>
   </div>
   <button class="intro-skip" type="button">Пропустить</button>
 </div>
@@ -81,15 +96,28 @@
       <h1 class="title"><span class="t1">Дорога к</span> <span class="t2">Судному дню</span></h1>
       <p class="lead">Чтобы ни один персонаж не появился из&nbsp;ниоткуда. Каждый пункт объясняет, зачем он нужен. Отметьте просмотренное и оцените — оценки ставятся героями, а не цифрами.</p>
 
-      <div class="countdown" aria-label="Обратный отсчёт до премьеры">
-        <div class="cd-label">До премьеры <b>18.12.2026</b></div>
-        <div class="cd-cells">
-          <div class="cd-cell"><b id="cdD">—</b><span>дней</span></div>
-          <div class="cd-cell"><b id="cdH">—</b><span>часов</span></div>
-          <div class="cd-cell"><b id="cdM">—</b><span>минут</span></div>
-          <div class="cd-cell cd-s"><b id="cdS">—</b><span>секунд</span></div>
+      <section class="clock" id="clock" aria-label="Обратный отсчёт до премьеры">
+        <div class="clock-art" aria-hidden="true">
+          <svg class="clock-glass" id="clockGlass" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"></svg>
+          <div class="clock-rays"></div>
+          <div class="clock-dust"></div>
+          <div class="clock-fog"></div>
         </div>
-      </div>
+        <div class="clock-body">
+          <div class="clock-k">Судный день близко</div>
+          <div class="clock-cells" id="clockCells">
+            <div class="cc"><b id="cdMo">00</b><span data-u="mo">месяцев</span></div><i>:</i>
+            <div class="cc"><b id="cdD">00</b><span data-u="d">дней</span></div><i>:</i>
+            <div class="cc"><b id="cdH">00</b><span data-u="h">часов</span></div><i>:</i>
+            <div class="cc"><b id="cdM">00</b><span data-u="m">минут</span></div><i>:</i>
+            <div class="cc cd-s"><b id="cdS">00</b><span data-u="s">секунд</span></div>
+          </div>
+          <div class="clock-date" id="clockDate">18 декабря 2026 · только в кино</div>
+        </div>
+        <button class="clock-btn" type="button" data-act="clock" aria-label="Часы на весь экран" title="На весь экран">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-open" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><path class="i-close" d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </section>
 
       <div class="hero-stats" data-stats></div>
 
@@ -123,6 +151,7 @@
     <div id="list" class="list" aria-live="polite"></div>
 
     <section class="final">
+      <div class="final-doom" aria-hidden="true">DOOM</div>
       <svg class="ic final-ic" viewBox="0 0 32 32" aria-hidden="true"><use href="#i-doom"/></svg>
       <div>
         <div class="final-k">Финальная точка · 18 декабря 2026</div>
@@ -138,6 +167,7 @@
         <span><i class="lg lg-opt"></i>По желанию</span>
       </div>
       <p>«Сорвиголова» (2003), «Электра», «Блэйд» и «Фантастическая четвёрка» 2005–2007 годов к&nbsp;MCU не&nbsp;относятся — они в&nbsp;списке потому, что их герои делают камео в&nbsp;«Дэдпуле и&nbsp;Росомахе».</p>
+      <p>Кадры из тизера «Мстители: Судный день» © Marvel Studios. Фанатский некоммерческий проект.</p>
       <p class="foot-actions">
         <button type="button" class="link" data-act="intro">▶ Заставка</button>
         <button type="button" class="link" data-act="sync">☁ Синхронизация</button>

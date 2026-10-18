@@ -1,15 +1,19 @@
 {
-  "name": "Marvel Films",
-  "short_name": "Marvel Films",
-  "description": "Хронология Marvel — подготовка к «Судному дню»",
+  "name": "Дорога к Судному дню",
+  "short_name": "Судный день",
+  "description": "Хронология Marvel — подготовка к «Мстители: Судный день». Отметки и оценки синхронизируются между устройствами.",
+  "lang": "ru",
+  "id": "./",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#e6dcc3",
-  "theme_color": "#23262a",
+  "orientation": "any",
+  "background_color": "#05070a",
+  "theme_color": "#05070a",
+  "categories": ["entertainment"],
   "icons": [
     { "src": "icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
     { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
   ]
 }

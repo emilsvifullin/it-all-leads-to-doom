@@ -765,33 +765,60 @@ function tick(){
 }
 
 /* ============================================================
-   Заставка в стиле Marvel → Судный день
+   Заставка: терминал → кольцо героев → Дум → название
    ============================================================ */
+const INTRO_HEROES=['spider','iron','shield','hammer','hulk','panther','strange','deadpool','wolverine','loki','venom','cmarvel','daredevil','wanda'];
+function fitText(el,maxW,maxPx){
+  el.style.fontSize=maxPx+'px';
+  const w=el.scrollWidth; if(w>maxW) el.style.fontSize=Math.floor(maxPx*maxW/w)+'px';
+}
 function playIntro(force){
   if(!force){
     try{ if(sessionStorage.getItem('doom-intro')) return; sessionStorage.setItem('doom-intro','1'); }catch(e){ return; }
     if(reduced()) return;
   }
-  const el=$('#intro'), flip=$('#introFlip');
+  const el=$('#intro'), term=$('#inTerm'), ring=$('#inRing');
   el.hidden=false; el.className='intro'; document.body.classList.add('intro-on');
-  const pool=FILMS.filter(f=>f.p==='must').sort(()=>Math.random()-.5).slice(0,18);
-  const pal=[['#9e0f14','#ff3b40'],['#13308a','#3f7bff'],['#0f6b37','#3dff9a'],['#8a5a00','#ffc23d'],['#4b1580','#a66bff'],['#2a3038','#8b97a5'],['#b3102a','#ff6a3d']];
-  let i=0, delay=150, ended=false; const timers=[];
-  const step=()=>{
-    if(i>=pool.length){ el.classList.add('logo'); timers.push(setTimeout(()=>el.classList.add('doom'),1000),setTimeout(finish,1800)); return; }
-    const f=pool[i], c=pal[i%pal.length];
-    flip.innerHTML=`<div class="pg" style="background:linear-gradient(${Math.round(Math.random()*360)}deg,${c[0]},${c[1]})">${ICONS.html(f.i)}<span>${esc(f.t)}</span></div>`;
-    i++; delay=Math.max(55,delay*.86); timers.push(setTimeout(step,delay));
-  };
+  const timers=[], at=(ms,fn)=>timers.push(setTimeout(fn,ms));
+  let ended=false;
+
+  // кольцо
+  ring.innerHTML=INTRO_HEROES.map((k,i)=>`<div class="ri" style="--a:${i*360/INTRO_HEROES.length}deg;--i:${i}">${ICONS.html(k)}</div>`).join('');
+  // название: подгоняем под ширину экрана
+  const days=Math.max(0,Math.ceil((PREMIERE-Date.now())/864e5));
+  $('#inSub').textContent=days?`Премьера 18.12.2026 · осталось ${days} дн.`:'Премьера состоялась';
+  const fit=()=>fitText($('#inMain'),Math.min(innerWidth-40,900),Math.min(96,innerWidth*.16));
+  fit(); if(document.fonts) document.fonts.ready.then(fit);   // шрифт может догрузиться позже — подгоняем ещё раз
+
+  // 1. терминал
+  const lines=[
+    ['> ПРОТОКОЛ «СУДНЫЙ ДЕНЬ»: ЗАПУСК',''],
+    [`> ХРОНОЛОГИЯ: ${FILMS.length} ОБЪЕКТОВ ЗАГРУЖЕНО`,''],
+    ['> МУЛЬТИВСЕЛЕННАЯ: НЕСТАБИЛЬНА','warn'],
+    ['> ЛАТВЕРИЯ ЖДЁТ…',''],
+  ];
+  term.innerHTML='';
+  let t=250;
+  lines.forEach(([txt,cls])=>{
+    const start=t;
+    at(start,()=>{ $$('.cur',term).forEach(x=>x.classList.remove('cur')); const d=document.createElement('div'); d.className=cls+' cur'; term.appendChild(d);
+      [...txt].forEach((ch,j)=>at(j*16,()=>{ d.textContent+=ch; })); });
+    t+=txt.length*16+180;
+  });
+  // 2–4. кольцо, Дум, название
+  at(1300,()=>el.classList.add('p2'));
+  at(3100,()=>el.classList.add('p3'));
+  at(4300,()=>el.classList.add('p4'));
+  at(6400,finish);
+
   function finish(){
     if(ended) return; ended=true;
     timers.forEach(clearTimeout); el.classList.add('out');
     document.removeEventListener('keydown',onKey);
-    setTimeout(()=>{ el.hidden=true; el.className='intro'; flip.innerHTML=''; document.body.classList.remove('intro-on'); },550);
+    setTimeout(()=>{ el.hidden=true; el.className='intro'; ring.innerHTML=''; term.innerHTML=''; document.body.classList.remove('intro-on'); },600);
   }
   const onKey=e=>{ if(['Escape',' ','Enter'].includes(e.key)){ e.preventDefault(); finish(); } };
   el.onclick=finish; document.addEventListener('keydown',onKey);
-  step();
 }
 
 /* ============================================================

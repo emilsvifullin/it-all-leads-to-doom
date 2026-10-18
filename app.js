@@ -33,6 +33,32 @@ const DEF_PREFS={level:'all',status:'all',fr:[],compact:false,collapseDone:true,
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Русская типографика: короткие слова приклеиваются к следующему, тире — к предыдущему,
+// последние два слова абзаца не разрываются — чтобы ни одно слово не висело в строке одно.
+const NB=' ';
+const SHORT=/(^|[\s(«])(в|во|и|с|со|к|ко|о|об|у|а|я|не|ни|на|по|из|за|до|от|для|без|над|под|при|про|как|что|но|же|ли|бы|его|её|их|это|тот|все|уже)\s+/gi;
+function typo(t){
+  let r=String(t).replace(SHORT,(m,p,w)=>p+w+NB).replace(SHORT,(m,p,w)=>p+w+NB);
+  r=r.replace(/\s+(—|–)\s/g,NB+'$1 ');
+  r=r.replace(/(\d)\s+(?=[а-яё])/gi,'$1'+NB);
+  const words=r.trim().split(' ');
+  const m=r.match(/(\S+) (\S+)\s*$/);
+  if(words.length>2&&m&&(m[1]+m[2]).length<=24) r=r.replace(/ (\S+)\s*$/,NB+'$1');
+  return r;
+}
+// Название: подзаголовок после двоеточия держится вместе, перенос — по двоеточию
+function typoTitle(t){
+  const i=t.indexOf(': ');
+  if(i>0&&t.length-i<=30) return typo(t.slice(0,i+1))+' '+t.slice(i+2).replace(/ /g,NB);
+  return typo(t);
+}
+const ttesc=s=>esc(typoTitle(s));
+const tesc=s=>esc(typo(s));
+function typoStatic(root){
+  const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement.closest('script,style,svg,input,textarea,kbd,.mono,.code,.in-term')?NodeFilter.FILTER_REJECT:(n.nodeValue.trim().length>3?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT)});
+  const nodes=[]; while(w.nextNode()) nodes.push(w.currentNode);
+  for(const n of nodes){ const lead=n.nodeValue.match(/^\s*/)[0], tail=n.nodeValue.match(/\s*$/)[0]; n.nodeValue=lead+typo(n.nodeValue.trim())+tail; }
+}
 const today=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)};
 const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 const mqDesk=matchMedia('(min-width:1080px)');
@@ -217,7 +243,7 @@ const I_CHEV='<svg class="year-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/
 function unitLabel(f){ return ICONS.has(f.i)?ICONS.noun(f.i,10):f.i; }
 function capHTML(f,v){
   if(!v) return `<span>Сколько ${unitLabel(f)} из 10?</span>`;
-  return `<b>${v} из 10 ${unitLabel(f)}</b><span>${esc(JOKES[v-1])}</span><button type="button" class="link" data-a="clear">сбросить</button>`;
+  return `<b>${v} из 10 ${unitLabel(f)}</b><span>${tesc(JOKES[v-1])}</span><button type="button" class="link" data-a="clear">сбросить</button>`;
 }
 function rateHTML(f,r){
   const v=+r.r||0; let b='';
@@ -234,9 +260,9 @@ function cardHTML(f){
     ${f.img?`<img class="pbg" src="${f.img}" alt="" loading="lazy" decoding="async">`:ICONS.html(f.i,'wm')}
     <button type="button" class="chk" data-a="done" aria-pressed="${done}" aria-label="${done?'Снять отметку':'Отметить просмотренным'}: ${esc(f.t)}"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
     <div class="c-body">
-      <h3 class="c-title">${esc(f.t)}</h3>
+      <h3 class="c-title">${ttesc(f.t)}</h3>
       <div class="c-meta"><span class="pri">${PRI[f.p]}</span><span>${esc(f.d)}</span><span>${esc(f.f)}</span></div>
-      <p class="c-why">${esc(f.w)}</p>
+      <p class="c-why">${tesc(f.w)}</p>
     </div>
     <div class="c-act"><button type="button" class="icon-btn" data-a="hide" aria-label="${hid?'Вернуть в список':'Скрыть из списка'}" title="${hid?'Вернуть':'Скрыть'}">${hid?I_EYE:I_EYE_OFF}</button></div>
     ${done?rateHTML(f,r):''}
@@ -375,8 +401,8 @@ function renderNext(){
     return;
   }
   box.innerHTML=`<div class="next-k">▶ Следующий на очереди</div>
-    <div class="next-row">${f.img?`<img class="next-poster" src="${f.img}" alt="Постер «${esc(f.t)}»" decoding="async">`:ICONS.html(f.i)}<div><div class="next-t">${esc(f.t)}</div><div class="next-d">${esc(f.d)} · ${esc(f.f)} · ${PRI[f.p].toLowerCase()}</div></div></div>
-    <p class="next-why">${esc(f.w)}</p>
+    <div class="next-row">${f.img?`<img class="next-poster" src="${f.img}" alt="Постер «${esc(f.t)}»" decoding="async">`:ICONS.html(f.i)}<div><div class="next-t">${ttesc(f.t)}</div><div class="next-d">${esc(f.d.replace(/ /g,NB))} · ${esc(f.f.replace(/ /g,NB))} ·${NB}${PRI[f.p].toLowerCase().replace(/ /g,NB)}</div></div></div>
+    <p class="next-why">${tesc(f.w)}</p>
     <div class="next-btns"><button type="button" class="btn btn-primary btn-sm" data-act="markNext">✓ Посмотрел</button><button type="button" class="btn btn-sm" data-act="next">Показать в списке</button></div>`;
 }
 function goNext(){
@@ -486,7 +512,7 @@ listEl.addEventListener('pointerover',e=>{
   $$('button',rate).forEach(x=>x.classList.toggle('pv',+x.dataset.v<=v));
   const card=rate.closest('.card'), f=BY_ID[card.dataset.id];
   const cap=$('.rate-cap',card); if(!cap.dataset.keep) cap.dataset.keep=cap.innerHTML;
-  cap.innerHTML=`<b>${v} из 10 ${unitLabel(f)}</b><span>${esc(JOKES[v-1])}</span>`;
+  cap.innerHTML=`<b>${v} из 10 ${unitLabel(f)}</b><span>${tesc(JOKES[v-1])}</span>`;
 });
 listEl.addEventListener('pointerout',e=>{
   const rate=e.target.closest('.rate'); if(!rate||rate.contains(e.relatedTarget)) return;
@@ -632,6 +658,7 @@ function renderSync(){
     <div class="sync-sec"><h3>Осторожно</h3>
       <div class="danger"><button type="button" class="btn btn-sm btn-danger" data-s="reset">Сбросить все отметки</button><button type="button" class="btn btn-sm" data-s="newcode">Отключиться и создать новый код</button></div>
     </div>`;
+  typoStatic($('#syncBody'));
   renderQR();
 }
 let qrLoading=null;
@@ -916,6 +943,7 @@ function setupBackdrop(){
 /* ============================================================
    Старт
    ============================================================ */
+typoStatic(document.body); typoStatic(filtersEl);
 loadStore(); loadUI();
 placeFilters();
 renderAll();

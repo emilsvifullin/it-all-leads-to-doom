@@ -1,5 +1,5 @@
 // Service worker: сайт открывается без сети. Свои файлы — «сначала сеть», шрифты и библиотеки — из кэша.
-const V='doom-v7-2';
+const V='doom-v7-3';
 const CORE=['./','index.html','styles.css','app.js','data.js','icons.js','site.webmanifest','icon.png','apple-touch-icon.png','icon-maskable.png','media/doom.jpg','media/doom-portrait.jpg','media/art/mask-dunes.jpg','media/art/doom-mist.jpg','media/art/green-city.jpg'];
 
 self.addEventListener('install',e=>{

@@ -508,8 +508,8 @@ html.clock-open .app{z-index:auto}
 .intro::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1s;
   background:linear-gradient(180deg,rgba(0,0,0,.35),transparent 30%,rgba(0,0,0,.25) 50%,rgba(0,0,0,.92) 85%)}
 .intro.p4::after{opacity:1}
-.intro.p4 .in-doom{animation:inDoomOut .9s ease forwards}
-@keyframes inDoomOut{to{opacity:0;transform:translate(-50%,-50%) scale(1.6);filter:blur(6px)}}
+.intro.p3.p4 .in-doom{animation:inDoomOut .8s ease forwards}
+@keyframes inDoomOut{from{opacity:1;transform:translate(-50%,-50%) scale(1)}to{opacity:0;transform:translate(-50%,-50%) scale(1.35);filter:blur(8px)}}
 
 /* 1. Терминал */
 .in-term{position:absolute;left:max(20px,env(safe-area-inset-left));right:20px;top:calc(22px + var(--safe-t));
@@ -533,7 +533,12 @@ html.clock-open .app{z-index:auto}
   filter:drop-shadow(0 0 12px rgba(255,255,255,.18));animation:inCounter 7s linear infinite}
 @keyframes inCounter{to{transform:rotate(-360deg)}}
 .intro.p2 .ri{opacity:1;transition:opacity .45s ease calc(var(--i) * 70ms)}
-.intro.p3 .ri{opacity:0;transform:rotate(var(--a)) translateY(0) rotate(calc(-1 * var(--a))) scale(.2);transition-delay:calc(var(--i) * 18ms)}
+.intro.p3 .ri{opacity:0;transform:rotate(var(--a)) translateY(0) rotate(calc(-1 * var(--a))) scale(.2);
+  transition:transform .7s cubic-bezier(.6,0,.9,.4) calc(var(--i) * 18ms),opacity .38s ease-in calc(var(--i) * 18ms + .12s)}
+.in-flash{position:absolute;left:0;top:0;width:220px;height:220px;margin:-110px 0 0 -110px;border-radius:50%;opacity:0;pointer-events:none;
+  background:radial-gradient(circle,rgba(235,255,240,.95) 0,rgba(120,240,170,.55) 22%,rgba(54,228,140,.18) 45%,transparent 70%)}
+.intro.p3 .in-flash{animation:inFlash .9s ease-out .42s forwards}
+@keyframes inFlash{0%{opacity:0;transform:scale(.2)}25%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(2.2)}}
 
 /* 3. Дум и волна */
 .in-doom{position:absolute;width:min(34vw,24vh,170px);height:min(34vw,24vh,170px);left:0;top:0;

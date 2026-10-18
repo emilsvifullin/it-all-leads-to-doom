@@ -250,13 +250,14 @@ function capHTML(f,v){
   if(!v) return `<span>Сколько ${unitLabel(f)} из 10?</span>`;
   return `<b>${v} из 10 ${unitLabel(f)}</b><span>${tesc(JOKES[v-1])}</span><button type="button" class="link" data-a="clear">сбросить</button>`;
 }
+const fmtDT=dt=>/^\d{4}-\d{2}-\d{2}$/.test(dt||'')?dt.split('-').reverse().join('.'):'без даты';
 function rateHTML(f,r){
   const v=+r.r||0; let b='';
   for(let i=1;i<=10;i++) b+=`<button type="button" role="radio" aria-checked="${i===v}" aria-label="${i} из 10" data-v="${i}" class="${i<=v?'on':''}" style="--i:${i}">${ICONS.html(f.i)}</button>`;
   return `<div class="c-rate">
     <div class="rate" role="radiogroup" aria-label="Оценка «${esc(f.t)}»">${b}</div>
     <div class="rate-cap">${capHTML(f,v)}</div>
-    <label class="c-date">Дата просмотра <input type="date" value="${esc(r.dt||'')}" max="${today()}"></label>
+    <div class="c-foot"><label class="stamp" title="Изменить дату просмотра"><span class="st-k">Просмотрено</span><span class="st-d">${fmtDT(r.dt)}</span><input type="date" value="${esc(r.dt||'')}" max="${today()}" aria-label="Дата просмотра «${esc(f.t)}»"></label></div>
   </div>`;
 }
 function cardHTML(f){
@@ -265,8 +266,8 @@ function cardHTML(f){
     ${f.img?`<img class="pbg" src="${f.img}" alt="" loading="lazy" decoding="async">`:ICONS.html(f.i,'wm')}
     <button type="button" class="chk" data-a="done" aria-pressed="${done}" aria-label="${done?'Снять отметку':'Отметить просмотренным'}: ${esc(f.t)}"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
     <div class="c-body">
-      <h3 class="c-title">${ttesc(f.t)}</h3>
-      <div class="c-meta"><span class="done-badge" aria-hidden="true">✓ Просмотрено</span><span class="pri">${PRI[f.p]}</span><span>${esc(f.d)}</span><span>${esc(f.f)}</span></div>
+      <h3 class="c-title"><span class="tt">${ttesc(f.t)}</span></h3>
+      <div class="c-meta"><span class="pri">${PRI[f.p]}</span><span>${esc(f.d)}</span><span>${esc(f.f)}</span></div>
       <p class="c-why">${tesc(f.w)}</p>
     </div>
     <div class="c-act"><button type="button" class="icon-btn" data-a="hide" aria-label="${hid?'Вернуть в список':'Скрыть из списка'}" title="${hid?'Вернуть':'Скрыть'}">${hid?I_EYE:I_EYE_OFF}</button></div>
@@ -439,12 +440,61 @@ function animateOut(el,done){
   el.style.transition='opacity .25s ease, transform .25s ease'; el.style.opacity='0'; el.style.transform='translateX(24px)';
   setTimeout(done,250);
 }
+// Печать: падает с разгоном, бьёт по карточке, пружинит; от удара — чернильное кольцо и брызги
+function stampDown(el){
+  const st=$('.stamp',el), tt=$('.c-title .tt',el), chk=$('.chk',el);
+  if(!st||!el.animate) return;
+  const ease='cubic-bezier(.22,1,.36,1)';
+  chk.animate([{transform:'scale(1)'},{transform:'scale(1.22)'},{transform:'scale(1)'}],{duration:320,easing:ease});
+  if(tt) tt.animate([{backgroundSize:'0% 1.5px'},{backgroundSize:'100% 1.5px'}],{duration:480,delay:60,easing:'cubic-bezier(.65,0,.35,1)',fill:'backwards'});
+  const delay=200, dur=520, hit=.56;
+  st.animate([
+    {opacity:0,transform:'translateY(-22px) scale(2.6) rotate(-22deg)',filter:'blur(3px)',easing:'cubic-bezier(.55,0,.9,.35)'},
+    {opacity:1,transform:'translateY(0) scale(.9) rotate(-5deg)',filter:'blur(0px)',offset:hit,easing:'cubic-bezier(.2,.9,.3,1)'},
+    {transform:'scale(1.05) rotate(-8.5deg)',offset:.78},
+    {opacity:.94,transform:'scale(1) rotate(-7deg)',filter:'blur(0px)'}
+  ],{duration:dur,delay,fill:'backwards'});
+  setTimeout(()=>inkImpact(el,st),delay+dur*hit);
+}
+function inkImpact(el,st){
+  if(!el.isConnected) return;
+  el.animate([{transform:'none'},{transform:'translateY(2px) scale(.988)'},{transform:'none'}],{duration:300,easing:'cubic-bezier(.22,1,.36,1)'});
+  try{ if(navigator.vibrate&&(!navigator.userActivation||navigator.userActivation.hasBeenActive)) navigator.vibrate(14); }catch(e){}
+  const cr=el.getBoundingClientRect(), sr=st.getBoundingClientRect();
+  const cx=sr.left-cr.left+sr.width/2, cy=sr.top-cr.top+sr.height/2;
+  const spawn=cls=>{ const n=document.createElement('span'); n.className=cls; n.style.left=cx+'px'; n.style.top=cy+'px'; el.appendChild(n); return n; };
+  const ring=spawn('ink-ring');
+  ring.animate([{opacity:.85,transform:'translate(-50%,-50%) scale(.35)'},{opacity:0,transform:'translate(-50%,-50%) scale(2.1)'}],{duration:600,easing:'cubic-bezier(.22,1,.36,1)'}).onfinish=()=>ring.remove();
+  for(let i=0;i<10;i++){
+    const d=spawn('ink-drop'), a=Math.PI*2*i/10+Math.random()*.5, r=30+Math.random()*38, k=.45+Math.random()*.8;
+    d.animate([{opacity:.95,transform:`translate(-50%,-50%) scale(${k})`},
+      {opacity:0,transform:`translate(calc(-50% + ${Math.cos(a)*r}px),calc(-50% + ${Math.sin(a)*r*.7}px)) scale(${k*.5})`}],
+      {duration:520+Math.random()*220,easing:'cubic-bezier(.22,1,.36,1)'}).onfinish=()=>d.remove();
+  }
+}
+// Снятие отметки: печать «отклеивается» и улетает, линия зачёркивания стягивается
+function stampLift(el){
+  const st=$('.stamp',el), tt=$('.c-title .tt',el);
+  if(st) st.animate([{opacity:.94,transform:'scale(1) rotate(-7deg)'},{opacity:0,transform:'translateY(-16px) scale(1.35) rotate(-17deg)'}],{duration:260,easing:'cubic-bezier(.55,0,1,.45)',fill:'forwards'});
+  if(tt) tt.animate([{backgroundSize:'100% 1.5px'},{backgroundSize:'0% 1.5px'}],{duration:240,easing:'ease-in',fill:'forwards'});
+}
+const doneBusy=new Set();
 function toggleDone(id,fromNext){
+  if(doneBusy.has(id)) return;
+  const old=$('#f-'+CSS.escape(id));
+  if(isDone(id)&&old&&!reduced()&&old.animate){
+    doneBusy.add(id); stampLift(old);
+    setTimeout(()=>{ doneBusy.delete(id); applyDone(id,fromNext); },250);
+    return;
+  }
+  applyDone(id,fromNext);
+}
+function applyDone(id,fromNext){
   const f=BY_ID[id], was=isDone(id);
   const yBefore=yearStats(f.y);
   if(was) setItem(id,{w:0}); else setItem(id,{w:1,dt:(rec(id)&&rec(id).dt)||today()});
   const el=refreshCard(id);
-  if(el&&!was&&!reduced()){ el.classList.add('flash-done'); setTimeout(()=>el.classList.remove('flash-done'),1500); }
+  if(el&&!was&&!reduced()){ el.classList.add('flash-done'); setTimeout(()=>el.classList.remove('flash-done'),1500); stampDown(el); }
   refreshMeta();
   if(!was){
     const ya=yearStats(f.y);
@@ -498,6 +548,8 @@ listEl.addEventListener('click',e=>{
   const yb=e.target.closest('[data-a="year"]');
   if(yb){ const sec=yb.closest('.year'), y=+sec.dataset.y, c=!sec.classList.contains('closed');
     ui.collapsed[y]=c; saveUI(); setClosed(sec,c); return; }
+  const si=e.target.closest('.stamp input');
+  if(si){ if(matchMedia('(hover:hover)').matches){ try{ si.showPicker&&si.showPicker(); }catch(_){} } return; }
   const card=e.target.closest('.card'); if(!card) return;
   const id=card.dataset.id;
   const a=e.target.closest('[data-a]');
@@ -510,7 +562,7 @@ listEl.addEventListener('click',e=>{
   if(e.target.closest('.c-body')&&!window.getSelection().toString()) toggleDone(id);
 });
 listEl.addEventListener('change',e=>{
-  if(e.target.matches('.c-date input')){ const id=e.target.closest('.card').dataset.id; setItem(id,{dt:e.target.value}); }
+  if(e.target.matches('.stamp input')){ const id=e.target.closest('.card').dataset.id; setItem(id,{dt:e.target.value}); e.target.closest('.stamp').querySelector('.st-d').textContent=fmtDT(e.target.value); }
 });
 // Превью оценки при наведении мышью
 listEl.addEventListener('pointerover',e=>{

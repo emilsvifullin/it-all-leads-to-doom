@@ -296,7 +296,7 @@ html.clock-open .app{z-index:auto}
   transition:opacity .4s,filter .4s}
 .card.done .pbg{opacity:.5;filter:none}
 @media (hover:hover){.card:hover .pbg{opacity:.5}}
-.card>*:not(.pbg):not(.wm){position:relative}
+.card>.chk,.card>.c-body,.card>.c-act,.card>.c-rate{position:relative}
 .next-poster{width:64px;aspect-ratio:2/3;object-fit:cover;border-radius:6px;flex:0 0 auto;box-shadow:0 6px 20px rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.08)}
 
 .chk{width:30px;height:30px;margin-top:1px;border-radius:9px;border:1.5px solid var(--line-3);display:grid;place-items:center;
@@ -315,14 +315,11 @@ html.clock-open .app{z-index:auto}
 .c-meta .pri{color:var(--pc);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:10.5px}
 .c-why{font-size:13.8px;color:#aab5c1;margin-top:8px;max-width:64ch}
 .card.done{background:rgba(16,34,25,.62);border-color:rgba(70,196,131,.24)}
-.card.done .c-title{color:#a9b8af;text-decoration:line-through;text-decoration-thickness:1.5px;text-decoration-color:rgba(70,196,131,.8)}
-.card.done .c-meta>span:not(.done-badge):not(.pri){text-decoration:line-through;text-decoration-color:rgba(147,160,174,.55);opacity:.65}
+.c-title .tt{background:linear-gradient(rgba(70,196,131,.9),rgba(70,196,131,.9)) 0 58%/0% 1.5px no-repeat;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.card.done .c-title{color:#a9b8af}
+.card.done .c-title .tt{background-size:100% 1.5px}
+.card.done .c-meta>span:not(.pri){text-decoration:line-through;text-decoration-color:rgba(147,160,174,.55);opacity:.65}
 .card.done .c-meta .pri{opacity:.55}
-.done-badge{display:none}
-.card.done .done-badge{display:inline-flex;align-items:center;gap:4px;padding:1px 7px 1px 6px;border-radius:5px;background:var(--green);color:#06210f;
-  font-weight:800;font-size:10px;letter-spacing:.14em;text-transform:uppercase;line-height:1.6}
-.card.flash-done .done-badge{animation:badgeIn .5s var(--ease-out)}
-@keyframes badgeIn{0%{opacity:0;transform:scale(.6)}60%{transform:scale(1.08)}100%{opacity:1;transform:none}}
 .card.done .c-why{display:none}
 .compact .c-why{display:none}
 .compact .card{padding-top:11px;padding-bottom:11px}
@@ -356,10 +353,19 @@ html.clock-open .app{z-index:auto}
 .rate-cap b{font-family:var(--f-mono);font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
 .rate-cap span{font-size:13px;color:var(--muted);font-style:italic}
 .rate-cap .link{margin-left:auto;font-size:11px;color:var(--dim)}
-.c-date{display:flex;align-items:center;gap:10px;margin-top:8px;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--dim)}
-.c-date input{font-family:var(--f-mono);font-size:16px;letter-spacing:0;color:var(--text);background:rgba(255,255,255,.04);
-  border:1px solid var(--line-2);border-radius:8px;padding:5px 8px;min-height:32px;-webkit-appearance:none;appearance:none;color-scheme:dark}
+/* Печать «Просмотрено» с датой; нажатие меняет дату */
+.c-foot{display:flex;justify-content:flex-end;margin-top:4px;padding:6px 8px 2px}
+.stamp{position:relative;display:inline-flex;flex-direction:column;align-items:center;gap:3px;padding:8px 15px 7px;color:var(--green);
+  border:2px solid currentColor;border-radius:5px;outline:1px solid currentColor;outline-offset:-6px;transform:rotate(-7deg);cursor:pointer;opacity:.94;
+  background:rgba(4,12,8,.78);
+  text-shadow:0 0 14px rgba(70,196,131,.35);transition:opacity .2s;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -4 0 0 0 3.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/90px 90px;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  -4 0 0 0 3.2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E") 0 0/90px 90px}
+@media (hover:hover){.stamp:hover{opacity:1}}
+.stamp:has(input:focus-visible){outline:2px solid var(--green);outline-offset:3px}
+.st-k{font-family:var(--f-display);font-size:18px;line-height:1;letter-spacing:.16em;padding-left:.16em;text-transform:uppercase}
+.st-d{font-family:var(--f-mono);font-weight:700;font-size:10px;line-height:1;letter-spacing:.22em;padding-left:.22em;font-variant-numeric:tabular-nums}
+.stamp input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;font-size:16px;-webkit-appearance:none;appearance:none;color-scheme:dark}
+.ink-ring{position:absolute;width:86px;height:86px;border-radius:50%;border:2px solid var(--green);pointer-events:none;opacity:0;box-shadow:0 0 18px rgba(70,196,131,.45)}
+.ink-drop{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--green);pointer-events:none;opacity:0}
 
 /* Анимация «просмотрено» */
 .card.flash-done::after{content:"";position:absolute;inset:0;pointer-events:none;

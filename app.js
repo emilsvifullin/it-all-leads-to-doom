@@ -10,7 +10,7 @@ const LS_KEY='doom-v4', LS_UI='doom-ui', OLD_KEY='doomsday-watchlist-v3';
 const PREMIERE=new Date(2026,11,18);
 const CODE_ABC='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
-const FILMS=window.FILMS, SEED=window.SEED||{};
+const FILMS=window.FILMS;
 const slug=s=>s.toLowerCase().replace(/[^a-zа-яё0-9]+/g,'-').slice(0,60);
 FILMS.forEach((f,i)=>{f.id=slug(f.t);f.n=i});
 const BY_ID=Object.fromEntries(FILMS.map(f=>[f.id,f]));
@@ -54,9 +54,9 @@ const normCode=s=>String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
 function loadStore(){
   try{ const s=JSON.parse(localStorage.getItem(LS_KEY)); if(s&&s.code){ store={...store,...s}; return; } }catch(e){}
   store.code=genCode();
+  // Перенос отметок этого браузера из прошлой версии сайта, если они были
   let old=null; try{ old=JSON.parse(localStorage.getItem(OLD_KEY)); }catch(e){}
-  const src=old||SEED;
-  for(const [k,v] of Object.entries(src)){
+  for(const [k,v] of Object.entries(old||{})){
     if(k.startsWith('__')||!BY_ID[k]||!v) continue;
     store.data['i:'+k]={w:1,r:v.r||'',dt:v.dt||'',h:0,u:1};   // u:1 — облако всегда важнее
   }

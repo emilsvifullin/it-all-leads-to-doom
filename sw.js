@@ -1,6 +1,6 @@
 // Service worker: сайт открывается без сети. Свои файлы — «сначала сеть», шрифты и библиотеки — из кэша.
-const V='doom-v4-4';
-const CORE=['./','index.html','styles.css','app.js','data.js','icons.js','site.webmanifest','icon.png','apple-touch-icon.png','icon-maskable.png'];
+const V='doom-v4-5';
+const CORE=['./','index.html','styles.css','app.js','data.js','icons.js','site.webmanifest','icon.png','apple-touch-icon.png','icon-maskable.png','media/doom.jpg','media/doom-portrait.jpg'];
 
 self.addEventListener('install',e=>{
   e.waitUntil(caches.open(V).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));
@@ -10,7 +10,7 @@ self.addEventListener('activate',e=>{
 });
 self.addEventListener('fetch',e=>{
   const req=e.request, url=new URL(req.url);
-  if(req.method!=='GET'||url.hostname.endsWith('supabase.co')) return;
+  if(req.method!=='GET'||url.hostname.endsWith('supabase.co')||url.pathname.endsWith('.mp4')) return;
   if(url.origin===location.origin){
     // no-cache: всегда сверяемся с сервером, чтобы обновления сайта приходили сразу
     e.respondWith(fetch(req.url,{cache:'no-cache',credentials:'same-origin'}).then(res=>{

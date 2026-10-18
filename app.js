@@ -777,7 +777,8 @@ function playIntro(force){
     try{ if(sessionStorage.getItem('doom-intro')) return; sessionStorage.setItem('doom-intro','1'); }catch(e){ return; }
     if(reduced()) return;
   }
-  const el=$('#intro'), term=$('#inTerm'), ring=$('#inRing');
+  const el=$('#intro'), term=$('#inTerm'), ring=$('#inRing'), iv=$('#inVideo');
+  if(!saveData()){ iv.src=vidSrc().mp4; iv.load(); }
   el.hidden=false; el.className='intro'; document.body.classList.add('intro-on');
   const timers=[], at=(ms,fn)=>timers.push(setTimeout(fn,ms));
   let ended=false;
@@ -808,17 +809,41 @@ function playIntro(force){
   // 2–4. кольцо, Дум, название
   at(1300,()=>el.classList.add('p2'));
   at(3100,()=>el.classList.add('p3'));
-  at(4300,()=>el.classList.add('p4'));
-  at(6400,finish);
+  at(4300,()=>{ el.classList.add('p4'); if(iv.src){ iv.currentTime=0; iv.play().catch(()=>{}); } });
+  at(7600,finish);
 
   function finish(){
     if(ended) return; ended=true;
     timers.forEach(clearTimeout); el.classList.add('out');
     document.removeEventListener('keydown',onKey);
-    setTimeout(()=>{ el.hidden=true; el.className='intro'; ring.innerHTML=''; term.innerHTML=''; document.body.classList.remove('intro-on'); },600);
+    setTimeout(()=>{ el.hidden=true; el.className='intro'; ring.innerHTML=''; term.innerHTML=''; iv.pause(); iv.removeAttribute('src'); document.body.classList.remove('intro-on'); },600);
   }
   const onKey=e=>{ if(['Escape',' ','Enter'].includes(e.key)){ e.preventDefault(); finish(); } };
   el.onclick=finish; document.addEventListener('keydown',onKey);
+}
+
+/* ============================================================
+   Видео: фон шапки и финал заставки
+   ============================================================ */
+const vidSrc=()=>{ const port=innerHeight>innerWidth*1.1; return {mp4:port?'media/doom-portrait.mp4':'media/doom.mp4',jpg:port?'media/doom-portrait.jpg':'media/doom.jpg'}; };
+const saveData=()=>!!(navigator.connection&&navigator.connection.saveData);
+function setupBackdrop(){
+  const bd=$('.backdrop'), v=$('#bdVideo');
+  const apply=()=>{
+    const src=vidSrc();
+    bd.style.setProperty('--bd-poster',`url("${src.jpg}")`);
+    if(reduced()||saveData()){ v.removeAttribute('src'); v.classList.remove('on'); return; }
+    if(!v.src.endsWith(src.mp4)){ v.classList.remove('on'); v.src=src.mp4; v.load(); }
+    const p=v.play(); if(p&&p.catch) p.catch(()=>{});
+  };
+  v.addEventListener('playing',()=>v.classList.add('on'));
+  apply();
+  let rt=0; addEventListener('resize',()=>{ clearTimeout(rt); rt=setTimeout(apply,300); });
+  // не тратим батарею, когда шапка не видна
+  if('IntersectionObserver' in window) new IntersectionObserver(([e])=>{
+    if(!v.src) return; e.isIntersecting?v.play().catch(()=>{}):v.pause();
+  }).observe(bd);
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&v.src) v.play().catch(()=>{}); });
 }
 
 /* ============================================================
@@ -830,6 +855,7 @@ renderAll();
 renderSyncIndicators();
 measure();
 tick(); setInterval(tick,1000);
+setupBackdrop();
 playIntro(false);
 checkHashJoin();
 addEventListener('hashchange',checkHashJoin);

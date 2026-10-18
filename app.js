@@ -240,7 +240,6 @@ function cardHTML(f){
     </div>
     <div class="c-act"><button type="button" class="icon-btn" data-a="hide" aria-label="${hid?'Вернуть в список':'Скрыть из списка'}" title="${hid?'Вернуть':'Скрыть'}">${hid?I_EYE:I_EYE_OFF}</button></div>
     ${done?rateHTML(f,r):''}
-    <span class="stamp" aria-hidden="true">Просмотрено</span>
   </article>`;
 }
 function yearHeadInner(y){
